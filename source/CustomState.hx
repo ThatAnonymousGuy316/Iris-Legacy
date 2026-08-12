@@ -45,8 +45,6 @@ typedef StateJson = {
     var backgroundX:Float;
     var backgroundY:Float;
     var backgroundAlpha:Float;
-    var stateScriptLUA:String;
-    var stateScriptHX:String;
 }
 
 typedef StateObject = {
@@ -64,7 +62,7 @@ typedef StateObject = {
 class CustomState extends MusicBeatState
 {
     public var hscript:FunkinHScript;
-    public var lua:FunkinLua
+    public var lua:FunkinLua;
     public var stateName:String;
     public var daJson:StateJson;
     public var stateObjects:FlxTypedGroup<FlxBasic>;
@@ -80,8 +78,10 @@ class CustomState extends MusicBeatState
     override function create()
     {
         daJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
-        lua = new FunkinLua(Paths.modFolders('states/scripts/${daJson.stateScriptLUA}.lua'));
-        hscript = new FunkinHScript(Paths.modFolders('states/scripts/${daJson.stateScriptHX}.hxs'));
+        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.lua')))
+            lua = new FunkinLua(Paths.modFolders('states/scripts/${stateName}.lua'));
+        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.hxs')))
+            hscript = new FunkinHScript(Paths.modFolders('states/scripts/${stateName}.hxs'));
         for (object in daJson.objects)
         {
             var sprite:FlxSprite = new FlxSprite(object.x, object.y);
@@ -100,6 +100,41 @@ class CustomState extends MusicBeatState
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
         }
+    }
+
+    override public function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        if (lua != null)
+            lua.call('onUpdate', [elapsed]);
+        if (hscript != null)
+            hscript.call('onUpdate', [elapsed]);
+    }
+
+    override public function beatHit()
+    {
+        super.beatHit();
+        if (lua != null)
+            lua.set('curBeat', curBeat);
+        if (hscript != null)
+            hscript.set('curBeat', curBeat);
+        if (lua != null)
+            lua.call('onBeatHit', []);
+        if (hscript != null)
+            hscript.call('onBeatHit', []);
+    }
+
+    override public function stepHit()
+    {
+        super.beatHit();
+        if (lua != null)
+            lua.set('curStep', curBeat);
+        if (hscript != null)
+            hscript.set('curStep', curBeat);
+        if (lua != null)
+            lua.call('onStepHit', []);
+        if (hscript != null)
+            hscript.call('onStepHit', []);
     }
     
     public function getObject(name:String):FlxBasic
