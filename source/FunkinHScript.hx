@@ -28,6 +28,7 @@ class FunkinHScript
         presetFlixel();
         presetFunkin();
         presetLegacy();
+		parser.allowTypes = true;
         interp.execute(parser.parseString(File.getContent(filePath), filePath));
         call('onScript', []);
     }
