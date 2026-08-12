@@ -28,6 +28,8 @@ class MasterEditorMenu extends MusicBeatState
 		'Dialogue Editor',
 		'Dialogue Portrait Editor',
 		'Main Menu Editor',
+		'Custom Menu Editor',
+		'Script Editor',
 		'Crash The Game'
 	];
 	private var grpTexts:FlxTypedGroup<Alphabet>;
@@ -116,6 +118,9 @@ class MasterEditorMenu extends MusicBeatState
 		if (controls.ACCEPT)
 		{
 			switch(options[curSelected]) {
+				case 'Script Editor':
+					//ScriptEditorState
+					MusicBeatState.switchState(new editors.ScriptEditorState());
 				case 'Crash The Game':
 					Sys.exit(0);
 				case 'Main Menu Editor':

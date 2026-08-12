@@ -105,6 +105,8 @@ class FunkinHScript
 
     public function presetLegacy()
     {
+        set('GrayscaleShader', GrayscaleShader);
+        set('CRTShader', CRTShader);
         set('TJSON', tjson.TJSON);
 		set('setVar', function(name:String, value:Dynamic)
 		{
