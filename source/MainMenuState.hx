@@ -213,8 +213,10 @@ class MainMenuState extends MusicBeatState
 								switch (daChoice)
 								{
 									default:
-										runLua('menuButtons/${daChoice}');
-										runHX('menuButtons/${daChoice}');
+										var scriptLUA:FunkinLua
+										var scriptHX:FunkinHScript;
+										runLua('menuButtons/${daChoice}', scriptLUA);
+										runHX('menuButtons/${daChoice}', scriptHX);
 									case 'story_mode':
 										MusicBeatState.switchState(new StoryMenuState());
 									case 'freeplay':
