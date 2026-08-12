@@ -2563,7 +2563,7 @@ class PlayState extends MusicBeatState
 
 		epicScore = epicScore.replace(
 			scoreTxtJson.replacements.combo,
-			Std.string(combo)
+			FlxStringUtil.formatMoney(combo, false, scoreTxtJson.commaSeperated)
 		);
 
 		epicScore = epicScore.replace(
