@@ -47,7 +47,7 @@ class FreeplayStateNew extends MusicBeatState
 
     var diffColor = [FlxColor.GREEN, FlxColor.YELLOW, FlxColor.RED, FlxColor.PINK, FlxColor.PURPLE];
 
-    public static var curDifficulty:Int = -1;
+    public static var curDifficulty:Int = 1;
 
     public var grpSongs:FlxTypedGroup<FlxText>;
 
@@ -105,6 +105,7 @@ class FreeplayStateNew extends MusicBeatState
 
         freeplayArtwork = new FlxSprite(560).loadGraphic(Paths.image('freeplay/artwork/dad'));
         freeplayArtwork.antialiasing = ClientPrefs.data.globalAntialiasing;
+        freeplayArtwork.alpha = 0.5;
         freeplayArtwork.updateHitbox();
         add(freeplayArtwork);
 
@@ -149,8 +150,6 @@ class FreeplayStateNew extends MusicBeatState
         rightDiffSel.animation.play('idle');
         rightDiffSel.flipX = true;
         add(rightDiffSel);
-
-        curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(CoolUtil.defaultDifficulty)));
 
         if (curDifficulty < 0)
             curDifficulty = 0;
