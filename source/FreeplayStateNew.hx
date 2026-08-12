@@ -103,7 +103,7 @@ class FreeplayStateNew extends MusicBeatState
         bg.updateHitbox();
         add(bg);
 
-        freeplayArtwork = new FlxSprite(530).loadGraphic(Paths.image('freeplay/artwork/dad'));
+        freeplayArtwork = new FlxSprite(560).loadGraphic(Paths.image('freeplay/artwork/dad'));
         freeplayArtwork.antialiasing = ClientPrefs.data.globalAntialiasing;
         freeplayArtwork.updateHitbox();
         add(freeplayArtwork);
