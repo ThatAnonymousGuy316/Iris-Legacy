@@ -45,10 +45,11 @@ typedef StateJson = {
     var backgroundX:Float;
     var backgroundY:Float;
     var backgroundAlpha:Float;
+    var stateScriptLUA:String;
+    var stateScriptHX:String;
 }
 
 typedef StateObject = {
-    var attachedScript:String;
     var name:String;
     var hasFrames:Bool;
     var animationPrefix:String;
@@ -62,10 +63,15 @@ typedef StateObject = {
 
 class CustomState extends MusicBeatState
 {
+    public var hscript:FunkinHScript;
+    public var lua:FunkinLua
     public var stateName:String;
     public var daJson:StateJson;
     public var stateObjects:FlxTypedGroup<FlxBasic>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
+
+    public static var curSelected:Int = 0;
+
     public function new(stateName:String)
     {
         super();
@@ -74,6 +80,8 @@ class CustomState extends MusicBeatState
     override function create()
     {
         daJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
+        lua = new FunkinLua(Paths.modFolders('states/scripts/${daJson.stateScriptLUA}.lua'));
+        hscript = new FunkinHScript(Paths.modFolders('states/scripts/${daJson.stateScriptHX}.hxs'));
         for (object in daJson.objects)
         {
             var sprite:FlxSprite = new FlxSprite(object.x, object.y);
