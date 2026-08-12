@@ -1,0 +1,100 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				-329,
+				-179
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "left"
+		},
+		{
+			"offsets": [
+				-318,
+				-184
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "down"
+		},
+		{
+			"offsets": [
+				-302,
+				-184
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "right"
+		},
+		{
+			"offsets": [
+				-324,
+				-177
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "up"
+		},
+		{
+			"offsets": [
+				-323,
+				-182
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "Hey!",
+			"indices": [],
+			"name": "Hey!"
+		},
+		{
+			"offsets": [
+				-322,
+				-179
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "Ahoh",
+			"indices": [],
+			"name": "Ahoh"
+		},
+		{
+			"offsets": [
+				-322,
+				-179
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "Idle"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/Vee",
+	"position": [
+		-600,
+		-80
+	],
+	"healthicon": "Vee",
+	"flip_x": true,
+	"healthbar_colors": [
+		153,
+		207,
+		145
+	],
+	"camera_position": [
+		280,
+		250
+	],
+	"sing_duration": 4,
+	"scale": 1
+}

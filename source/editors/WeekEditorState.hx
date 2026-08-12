@@ -534,15 +534,14 @@ class WeekEditorState extends MusicBeatState
 	}
 
 	public static function saveWeek(weekFile:WeekFile) {
-		var data:String = Json.stringify(weekFile, "\t");
-		if (data.length > 0)
-		{
-			_file = new FileReference();
-			_file.addEventListener(Event.COMPLETE, onSaveComplete);
-			_file.addEventListener(Event.CANCEL, onSaveCancel);
-			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data, weekFileName + ".json");
-		}
+		var saveFolder:String = Sys.getCwd() + "/game/weeks";
+		if (!FileSystem.exists(saveFolder))
+			FileSystem.createDirectory(saveFolder);
+
+			File.saveContent(
+			saveFolder + '/${weekFileName}.json',
+			Json.stringify(weekFile, null, "\t")
+		);
 	}
 	
 	private static function onSaveComplete(_):Void

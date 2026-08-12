@@ -1,0 +1,29 @@
+{
+	"version": "Psych Engine v0.4.2 but its actually 0.6.3-boyf-edition-cool",
+	"options": [
+		{
+			"x": 336.5,
+			"y": 109,
+			"name": "story_mode"
+		},
+		{
+			"x": 401,
+			"y": 235,
+			"name": "freeplay"
+		},
+		{
+			"x": 409,
+			"y": 372,
+			"name": "credits"
+		},
+		{
+			"x": 408.5,
+			"y": 487,
+			"name": "options"
+		}
+	],
+	"background": "menuBG",
+	"backgroundFlash": "menuBGMagenta",
+	"backgroundX": -80,
+	"backgroundY": 0
+}

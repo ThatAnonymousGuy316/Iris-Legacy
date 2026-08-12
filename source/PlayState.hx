@@ -60,7 +60,71 @@ import VideoPlayer;
 import vlc.MP4Handler as VideoPlayer;
 #end
 #end
+
+import modcharting.ModchartFuncs;
+import modcharting.NoteMovement;
+import modcharting.PlayfieldRenderer;
+
+import haxe.Json;
+
 using StringTools;
+
+typedef HealthBarJson = {
+	var texture:String;
+	var yDownscroll:Float;
+	var x:Float;
+	var y:Float;
+	var xPlus:Float;
+	var yPlus:Float;
+	var barWidth:Int;
+	var barHeight:Int;
+}
+
+typedef ScoreTxtStringJson = {
+	var x:Float;
+	var yDownscroll:Float;
+	var y:Float;
+	var xPlus:Float;
+	var yPlus:Float;
+	var daText:String;
+	var maxPercent:Float;
+	var decimals:Int;
+	var commaSeperated:Bool;
+	var ratings:RatingNameJson;
+	var replacements:ReplacingTextMeta;
+	var enableScoreBar:Bool;
+	var scoreBarTexture:String;
+	var scoreBarAlpha:Float;
+	var scoreBarScale:Float;
+	var scoreBarX:Float;
+	var scoreBarY:Float;
+	var scoreBarYDownscroll:Float;
+	var scoreBarXPlus:Float;
+	var scoreBarYPlus:Float;
+}
+
+typedef RatingNameJson = {
+	var data1:String;
+	var data2:String;
+	var data3:String;
+	var data4:String;
+	var data5:String;
+	var data6:String;
+	var data7:String;
+	var data8:String;
+	var data9:String;
+	var data10:String;
+}
+
+typedef ReplacingTextMeta = {
+	var score:String;
+	var miss:String;
+	var percent:String;
+	var rating:String;
+	var fc:String;
+	var combo:String;
+	var health:String;
+}
 
 class PlayState extends MusicBeatState
 {
@@ -119,6 +183,8 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	
+	public var stageData:StageFile;
 
 	public var spawnTime:Float = 2000;
 
@@ -157,6 +223,7 @@ class PlayState extends MusicBeatState
 	public var combo:Int = 0;
 
 	private var healthBarBG:AttachedSprite;
+	private var scoreBar:AttachedSprite;
 
 	public var healthBar:FlxBar;
 
@@ -313,10 +380,29 @@ class PlayState extends MusicBeatState
 
 	var precacheList:Map<String, String> = new Map<String, String>();
 
+	var healthBarJson:HealthBarJson;
+	var scoreTxtJson:ScoreTxtStringJson;
+
 	override public function create()
 	{
 		// trace('Playback Rate: ' + playbackRate);
 		Paths.clearStoredMemory();
+
+		scoreTxtJson = Json.parse(Paths.getTextFromFile('hud/ScoreText.json'));
+		healthBarJson = Json.parse(Paths.getTextFromFile('hud/HealthBar.json'));
+
+		ratingStuff = [
+			[scoreTxtJson.ratings.data1, 0.2], // From 0% to 19%
+			[scoreTxtJson.ratings.data2, 0.4], // From 20% to 39%
+			[scoreTxtJson.ratings.data3, 0.5], // From 40% to 49%
+			[scoreTxtJson.ratings.data4, 0.6], // From 50% to 59%
+			[scoreTxtJson.ratings.data5, 0.69], // From 60% to 68%
+			[scoreTxtJson.ratings.data6, 0.7], // 69%
+			[scoreTxtJson.ratings.data7, 0.8], // From 70% to 79%
+			[scoreTxtJson.ratings.data8, 0.9], // From 80% to 89%
+			[scoreTxtJson.ratings.data9, 1], // From 90% to 99%
+			[scoreTxtJson.ratings.data10, 1] // The value on this one isn't used actually, since Perfect is always "1"
+		];
 
 		// for lua
 		instance = this;
@@ -423,7 +509,22 @@ class PlayState extends MusicBeatState
 		}
 		SONG.stage = curStage;
 
-		var stageData:StageFile = StageData.getStageFile(curStage);
+		stageData = StageData.getStageFile(curStage);
+
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var crt = new CRTShader();
+			camGame.filters = [
+				new openfl.filters.ShaderFilter(new CRTShader())
+			];
+			camHUD.filters = [
+				new openfl.filters.ShaderFilter(new CRTShader())
+			];
+			camOther.filters = [
+				new openfl.filters.ShaderFilter(new CRTShader())
+			];
+		}
+
 		if (stageData == null)
 		{ // Stage couldn't be found, create a dummy stage for preventing a crash
 			stageData = {
@@ -439,7 +540,7 @@ class PlayState extends MusicBeatState
 				camera_boyfriend: [0, 0],
 				camera_opponent: [0, 0],
 				camera_girlfriend: [0, 0],
-				camera_speed: 1
+				camera_speed: 1,
 			};
 		}
 
@@ -652,22 +753,30 @@ class PlayState extends MusicBeatState
 				add(evilSnow);
 
 			case 'school': // Week 6 - Senpai, Roses
+				var grayscale = new GrayscaleShader();
+
 				GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
 				GameOverSubstate.loopSoundName = 'gameOver-pixel';
 				GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
 				GameOverSubstate.characterName = 'bf-pixel-dead';
 
 				var bgSky:BGSprite = new BGSprite('weeb/weebSky', 0, 0, 0.1, 0.1);
+				if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+					bgSky.shader = grayscale;
 				add(bgSky);
 				bgSky.antialiasing = false;
 
 				var repositionShit = -200;
 
 				var bgSchool:BGSprite = new BGSprite('weeb/weebSchool', repositionShit, 0, 0.6, 0.90);
+				if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+					bgSchool.shader = grayscale;
 				add(bgSchool);
 				bgSchool.antialiasing = false;
 
 				var bgStreet:BGSprite = new BGSprite('weeb/weebStreet', repositionShit, 0, 0.95, 0.95);
+				if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+					bgStreet.shader = grayscale;
 				add(bgStreet);
 				bgStreet.antialiasing = false;
 
@@ -677,6 +786,8 @@ class PlayState extends MusicBeatState
 					var fgTrees:BGSprite = new BGSprite('weeb/weebTreesBack', repositionShit + 170, 130, 0.9, 0.9);
 					fgTrees.setGraphicSize(Std.int(widShit * 0.8));
 					fgTrees.updateHitbox();
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						fgTrees.shader = grayscale;
 					add(fgTrees);
 					fgTrees.antialiasing = false;
 				}
@@ -686,6 +797,8 @@ class PlayState extends MusicBeatState
 				bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
 				bgTrees.animation.play('treeLoop');
 				bgTrees.scrollFactor.set(0.85, 0.85);
+				if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+					bgTrees.shader = grayscale;
 				add(bgTrees);
 				bgTrees.antialiasing = false;
 
@@ -694,6 +807,8 @@ class PlayState extends MusicBeatState
 					var treeLeaves:BGSprite = new BGSprite('weeb/petals', repositionShit, -40, 0.85, 0.85, ['PETALS ALL'], true);
 					treeLeaves.setGraphicSize(widShit);
 					treeLeaves.updateHitbox();
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						treeLeaves.shader = grayscale;
 					add(treeLeaves);
 					treeLeaves.antialiasing = false;
 				}
@@ -714,11 +829,14 @@ class PlayState extends MusicBeatState
 					bgGirls.scrollFactor.set(0.9, 0.9);
 
 					bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						bgGirls.shader = grayscale;
 					bgGirls.updateHitbox();
 					add(bgGirls);
 				}
 
 			case 'schoolEvil': // Week 6 - Thorns
+				var grayscale = new GrayscaleShader();
 				GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
 				GameOverSubstate.loopSoundName = 'gameOver-pixel';
 				GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
@@ -730,11 +848,15 @@ class PlayState extends MusicBeatState
 				if (!ClientPrefs.data.lowQuality)
 				{
 					var bg:BGSprite = new BGSprite('weeb/animatedEvilSchool', posX, posY, 0.8, 0.9, ['background 2'], true);
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						bg.shader = grayscale;
 					bg.scale.set(6, 6);
 					bg.antialiasing = false;
 					add(bg);
 
 					bgGhouls = new BGSprite('weeb/bgGhouls', -100, 190, 0.9, 0.9, ['BG freaks glitch instance'], false);
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						bgGhouls.shader = grayscale;
 					bgGhouls.setGraphicSize(Std.int(bgGhouls.width * daPixelZoom));
 					bgGhouls.updateHitbox();
 					bgGhouls.visible = false;
@@ -744,6 +866,8 @@ class PlayState extends MusicBeatState
 				else
 				{
 					var bg:BGSprite = new BGSprite('weeb/animatedEvilSchool_low', posX, posY, 0.8, 0.9);
+					if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+						bg.shader = grayscale;
 					bg.scale.set(6, 6);
 					bg.antialiasing = false;
 					add(bg);
@@ -926,6 +1050,11 @@ class PlayState extends MusicBeatState
 		{
 			gf = new Character(0, 0, gfVersion);
 			startCharacterPos(gf);
+			if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+			{
+				var grayscale = new GrayscaleShader();
+				gf.shader = grayscale;
+			}
 			gf.scrollFactor.set(0.95, 0.95);
 			gfGroup.add(gf);
 			startCharacterLua(gf.curCharacter);
@@ -955,11 +1084,21 @@ class PlayState extends MusicBeatState
 
 		dad = new Character(0, 0, SONG.player2);
 		startCharacterPos(dad, true);
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			dad.shader = grayscale;
+		}
 		dadGroup.add(dad);
 		startCharacterLua(dad.curCharacter);
 
 		boyfriend = new Character(0, 0, SONG.player1, true);
 		startCharacterPos(boyfriend);
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			boyfriend.shader = grayscale;
+		}
 		boyfriendGroup.add(boyfriend);
 		startCharacterLua(boyfriend.curCharacter);
 
@@ -978,10 +1117,20 @@ class PlayState extends MusicBeatState
 		}
 
 		comboGroup = new FlxSpriteGroup();
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			comboGroup.shader = grayscale;
+		}
 		add(comboGroup);
 		noteGroup = new FlxTypedGroup<FlxBasic>();
 		add(noteGroup);
 		uiGroup = new FlxSpriteGroup();
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			uiGroup.shader = grayscale;
+		}
 		add(uiGroup);
 
 		switch (curStage)
@@ -992,6 +1141,11 @@ class PlayState extends MusicBeatState
 
 			case 'schoolEvil':
 				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069); // nice
+				if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+				{
+					var grayscale = new GrayscaleShader();
+					evilTrail.shader = grayscale;
+				}
 				addBehindDad(evilTrail);
 		}
 
@@ -1077,6 +1231,9 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
+		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
+		playfieldRenderer.cameras = [camHUD];
+		noteGroup.add(playfieldRenderer);
 		noteGroup.add(grpNoteSplashes);
 
 		camFollow = new FlxPoint();
@@ -1105,18 +1262,28 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 		moveCameraSection();
 
-		healthBarBG = new AttachedSprite('healthBar');
-		healthBarBG.y = FlxG.height * 0.89;
-		healthBarBG.screenCenter(X);
+		var cornerMark:FlxText = new FlxText(0, 0, 0, 'IRIS LEGACY v${MainMenuState.irisLegacyVersion}');
+		cornerMark.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE);
+		cornerMark.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		uiGroup.add(cornerMark);
+		cornerMark.setPosition(FlxG.width - (cornerMark.width + 5), 5);
+		cornerMark.antialiasing = true;
+
+		healthBarBG = new AttachedSprite(healthBarJson.texture);
+		healthBarBG.x = healthBarJson.x;
+		healthBarBG.y = healthBarJson.y;
+		if (ClientPrefs.data.downScroll)
+			healthBarBG.y = healthBarJson.yDownscroll;
 		healthBarBG.scrollFactor.set();
 		healthBarBG.visible = !ClientPrefs.data.hideHud;
 		healthBarBG.xAdd = -4;
 		healthBarBG.yAdd = -4;
+		healthBarBG.x += healthBarJson.xPlus;
+		healthBarBG.y += healthBarJson.yPlus;
+		healthBarBG.alpha = ClientPrefs.data.healthBarAlpha;
 		uiGroup.add(healthBarBG);
-		if (ClientPrefs.data.downScroll)
-			healthBarBG.y = 0.11 * FlxG.height;
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - healthBarJson.barWidth), Std.int(healthBarBG.height - healthBarJson.barHeight), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		// healthBar
@@ -1137,12 +1304,41 @@ class PlayState extends MusicBeatState
 		iconP2.alpha = ClientPrefs.data.healthBarAlpha;
 		uiGroup.add(iconP2);
 		reloadHealthBarColors();
+		
+		scoreBar = new AttachedSprite(scoreTxtJson.scoreBarTexture);
+		scoreBar.y = FlxG.height * 0.89 - 45;
+		scoreBar.screenCenter(X);
+		scoreBar.scrollFactor.set();
+		scoreBar.xAdd = -4;
+		scoreBar.yAdd = -4;
+		scoreBar.x = scoreTxtJson.scoreBarX;
+		scoreBar.y = scoreTxtJson.scoreBarY;
+		if (ClientPrefs.data.downScroll)
+			scoreBar.y = scoreTxtJson.scoreBarYDownscroll;
+		scoreBar.x += scoreTxtJson.scoreBarXPlus;
+		scoreBar.x += scoreTxtJson.scoreBarYPlus;
+		scoreBar.scale.x = scoreTxtJson.scoreBarScale;
+		scoreBar.scale.y = scoreTxtJson.scoreBarScale;
+		scoreBar.alpha = scoreTxtJson.scoreBarAlpha;
+		scoreBar.visible = scoreTxtJson.enableScoreBar && !ClientPrefs.data.hideHud;
+		uiGroup.add(scoreBar);
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			scoreBar.shader = grayscale;
+		}
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
+		scoreTxt.x = scoreTxtJson.x;
+		scoreTxt.y = scoreTxtJson.y;
+		if (ClientPrefs.data.downScroll)
+			scoreTxt.y = scoreTxtJson.yDownscroll;
+		scoreTxt.x += scoreTxtJson.xPlus;
+		scoreTxt.y += scoreTxtJson.yPlus;
 		uiGroup.add(scoreTxt);
 
 		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, "BOTPLAY", 32);
@@ -1354,6 +1550,7 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		ModchartFuncs.loadLuaFunctions();
 		callOnLuas('onCreatePost', []);
 
 		super.create();
@@ -1510,6 +1707,14 @@ class PlayState extends MusicBeatState
 	{
 		healthBar.createFilledBar(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
 			FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
+		
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			healthBar.createFilledBar(
+				FlxColor.fromRGB(128, 128, 128),
+				FlxColor.WHITE
+			);
+		}
 
 		healthBar.updateBar();
 	}
@@ -2133,6 +2338,7 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+			NoteMovement.getDefaultStrumPos(this);
 			for (i in 0...playerStrums.length)
 			{
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
@@ -2336,8 +2542,64 @@ class PlayState extends MusicBeatState
 			str = '${ratingName} (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' + (ratingFC != null && ratingFC != "" ? ' - ${ratingFC}' : '');
 		}
 
-		var tempScore:String = 'Score: ${songScore}' + (!instakillOnMiss ? ' | Misses: ${songMisses}' : "") + ' | Rating: ${str}';
-		scoreTxt.text = '${tempScore}\n';
+		/*scoreTxt.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, scoreTxtJson.commaSeperated)}';
+		if (!instakillOnMiss)
+		{
+			scoreTxt.text += ' Misses: ${FlxStringUtil.formatMoney(songMisses, false, scoreTxtJson.commaSeperated)}';
+		}
+		scoreTxt.text += ' Rating: ${Highscore.floorDecimal(ratingPercent * scoreTxtJson.maxPercent, scoreTxtJson.decimals)}%';*/
+
+		var epicScore:String = scoreTxtJson.daText;
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.score,
+			FlxStringUtil.formatMoney(songScore, false, scoreTxtJson.commaSeperated)
+		);
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.miss,
+			FlxStringUtil.formatMoney(songMisses, false, scoreTxtJson.commaSeperated)
+		);
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.percent,
+			Std.string(Highscore.floorDecimal(
+				ratingPercent * scoreTxtJson.maxPercent,
+				scoreTxtJson.decimals
+			))
+		);
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.rating,
+			ratingName
+		);
+
+		if (ratingName == '?')
+		{
+			epicScore = epicScore.replace(
+				scoreTxtJson.replacements.fc,
+				'!'
+			);
+		}
+		else
+		{
+			epicScore = epicScore.replace(
+				scoreTxtJson.replacements.fc,
+				ratingFC
+			);
+		}
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.combo,
+			Std.string(combo)
+		);
+
+		epicScore = epicScore.replace(
+			scoreTxtJson.replacements.health,
+			Std.string(Math.round(health * 50))
+		);
+
+		scoreTxt.text = epicScore;
 
 		if (ClientPrefs.data.scoreZoom && !miss && !cpuControlled)
 		{
@@ -3184,6 +3446,18 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.anyJustPressed(debugKeysChart) && !endingSong && !inCutscene)
 			openChartEditor();
 
+		if (FlxG.keys.justPressed.NINE && !endingSong && !inCutscene)
+		{
+			persistentUpdate = false;
+			paused = true;
+			cancelMusicFadeTween();
+			MusicBeatState.switchState(new modcharting.ModchartEditorState());
+
+			#if desktop
+			DiscordClient.changePresence("Modchart Editor", null, null, true);
+			#end
+		}
+
 		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9 * playbackRate), 0, 1));
 		iconP1.scale.set(mult, mult);
 		iconP1.updateHitbox();
@@ -3422,7 +3696,8 @@ class PlayState extends MusicBeatState
 					{
 						if (daNote.mustPress && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit))
 						{
-							noteMiss(daNote);
+							if (!daNote.isSustainNote)
+								noteMiss(daNote);
 						}
 
 						daNote.active = false;
@@ -4324,6 +4599,11 @@ class PlayState extends MusicBeatState
 		//
 
 		var rating:FlxSprite = new FlxSprite();
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+		{
+			var grayscale = new GrayscaleShader();
+			rating.shader = grayscale;
+		}
 		var score:Int = 350;
 
 		// tryna do MS based judgment due to popular demand
@@ -4335,6 +4615,15 @@ class PlayState extends MusicBeatState
 			daRating.increase();
 		note.rating = daRating.name;
 		score = daRating.score;
+
+		if (ClientPrefs.data.missOnBad)
+		{
+			if (daRating.name == 'bad' || daRating.name == 'shit')
+			{
+				songMisses += 1;
+				combo = 0;
+			}
+		}
 
 		if (daRating.noteSplash && !note.noteSplashDisabled)
 			spawnNoteSplashOnNote(note);
@@ -4431,6 +4720,12 @@ class PlayState extends MusicBeatState
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
+
+			if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+			{
+				var grayscale = new GrayscaleShader();
+				numScore.shader = grayscale;
+			}
 
 			numScore.x += ClientPrefs.data.comboOffset[2];
 			numScore.y -= ClientPrefs.data.comboOffset[3];
@@ -4898,16 +5193,20 @@ class PlayState extends MusicBeatState
 
 		if (cpuControlled)
 		{
+			if (note.isSustainNote)
+			{
+				var time:Float = 0.15;
+				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+					time += 0.15;
+				StrumPlayAnim(false, Std.int(Math.abs(note.noteData)), time);
+			}
+		}
+		else
+		{
 			var time:Float = 0.15;
 			if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
 				time += 0.15;
 			StrumPlayAnim(false, Std.int(Math.abs(note.noteData)), time);
-		}
-		else
-		{
-			var spr = playerStrums.members[note.noteData];
-			if (spr != null)
-				spr.playAnim('confirm', true);
 		}
 		vocals.volume = 1;
 

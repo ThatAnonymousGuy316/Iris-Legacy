@@ -504,7 +504,7 @@ class ChartingState extends MusicBeatState
 		#end
 
 		var tempMap:Map<String, Bool> = new Map<String, Bool>();
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characters:Array<String> = [];
 		for (i in 0...characters.length) {
 			tempMap.set(characters[i], true);
 		}
@@ -560,7 +560,7 @@ class ChartingState extends MusicBeatState
 		#end
 
 		tempMap.clear();
-		var stageFile:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+		var stageFile:Array<String> = [];
 		var stages:Array<String> = [];
 		for (i in 0...stageFile.length) { //Prevent duplicates
 			var stageToCheck:String = stageFile[i];
@@ -1589,7 +1589,6 @@ class ChartingState extends MusicBeatState
 			dummyArrow.visible = false;
 		}
 
-		if (FlxG.mouse.justPressed)
 		{
 			if (FlxG.mouse.overlaps(curRenderedNotes))
 			{
@@ -1597,17 +1596,17 @@ class ChartingState extends MusicBeatState
 				{
 					if (FlxG.mouse.overlaps(note))
 					{
-						if (FlxG.keys.pressed.CONTROL)
+						if (FlxG.mouse.justPressed)
 						{
 							selectNote(note);
 						}
-						else if (FlxG.keys.pressed.ALT)
+						else if (FlxG.keys.pressed.ALT && FlxG.mouse.justPressed)
 						{
 							selectNote(note);
 							curSelectedNote[3] = noteTypeIntMap.get(currentType);
 							updateGrid();
 						}
-						else
+						else if (FlxG.mouse.justPressedRight)
 						{
 							//trace('tryin to delete note...');
 							deleteNote(note);
@@ -1615,7 +1614,7 @@ class ChartingState extends MusicBeatState
 					}
 				});
 			}
-			else
+			else if (FlxG.mouse.justPressed)
 			{
 				if (FlxG.mouse.x > gridBG.x
 					&& FlxG.mouse.x < gridBG.x + gridBG.width

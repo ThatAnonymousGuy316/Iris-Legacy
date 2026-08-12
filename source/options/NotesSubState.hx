@@ -235,28 +235,44 @@ class NotesSubState extends MusicBeatSubstate
 		}
 	}
 
-	function resetValue(selected:Int, type:Int) {
-		curValue = 0;
-		ClientPrefs.data.arrowHSV[selected][type] = 0;
-		switch(type) {
-			case 0: shaderArray[selected].hue = 0;
-			case 1: shaderArray[selected].saturation = 0;
-			case 2: shaderArray[selected].brightness = 0;
+	function resetValue(selected:Int, type:Int)
+	{
+		var hueValues = [255, -180, 150, 0];
+		var resetValue:Int = 0;
+
+		if (type == 0)
+			resetValue = hueValues[selected];
+
+		ClientPrefs.data.arrowHSV[selected][type] = resetValue;
+
+		if (selected == curSelected && type == typeSelected)
+			curValue = resetValue;
+
+		switch (type)
+		{
+			case 0: shaderArray[selected].hue = resetValue / 360;
+			case 1: shaderArray[selected].saturation = resetValue / 100;
+			case 2: shaderArray[selected].brightness = resetValue / 100;
 		}
 
 		var item = grpNumbers.members[(selected * 3) + type];
-		item.text = '0';
+		item.text = Std.string(Math.round(resetValue));
 
 		var add = (40 * (item.letters.length - 1)) / 2;
+
 		for (letter in item.letters)
 		{
 			letter.offset.x += add;
+
+			if (resetValue < 0)
+				letter.offset.x += 10;
 		}
 	}
+	
 	function updateValue(change:Float = 0) {
 		curValue += change;
 		var roundedValue:Int = Math.round(curValue);
-		var max:Float = 180;
+		var max:Float = 255;
 		switch(typeSelected) {
 			case 1 | 2: max = 100;
 		}

@@ -89,6 +89,8 @@ class TitleState extends MusicBeatState
 	{
 		super.create();
 
+		FlxG.mouse.useSystemCursor = true;
+
 		swagShader = new ColorSwap();
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 

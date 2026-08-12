@@ -3258,37 +3258,97 @@ class HScript
 	public function new()
 	{
 		interp = new Interp();
-		interp.variables.set('FlxG', FlxG);
-		interp.variables.set('FlxSprite', FlxSprite);
-		interp.variables.set('FlxCamera', FlxCamera);
-		interp.variables.set('FlxTimer', FlxTimer);
-		interp.variables.set('FlxTween', FlxTween);
-		interp.variables.set('FlxEase', FlxEase);
-		interp.variables.set('PlayState', PlayState);
-		interp.variables.set('game', PlayState.instance);
-		interp.variables.set('Paths', Paths);
-		interp.variables.set('Conductor', Conductor);
-		interp.variables.set('ClientPrefs', ClientPrefs);
-		interp.variables.set('Character', Character);
-		interp.variables.set('Alphabet', Alphabet);
-		interp.variables.set('CustomSubstate', CustomSubstate);
-		#if (!flash && sys)
-		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
-		#end
-		interp.variables.set('ShaderFilter', openfl.filters.ShaderFilter);
-		interp.variables.set('StringTools', StringTools);
+        presetHaxe();
+        presetFlixel();
+        presetFunkin();
+        presetLegacy();
+	}
 
-		interp.variables.set('setVar', function(name:String, value:Dynamic)
+	public function presetHaxe()
+    {
+        set('Std', Std);
+        set('Math', Math);
+        set('StringTools', StringTools);
+        set('Dynamic', Dynamic);
+        set('Json', haxe.Json);
+        set('importClass', function(className:String)
+        {
+            var classRef = Type.resolveClass(className);
+
+            if (classRef != null)
+            {
+                set(className, classRef);
+            }
+        });
+    }
+
+    public function presetFlixel()
+    {
+        set('FlxG', flixel.FlxG);
+        set('FlxBasic', flixel.FlxBasic);
+        set('FlxObject', flixel.FlxObject);
+        set('FlxSprite', flixel.FlxSprite);
+        set('FlxState', flixel.FlxState);
+        set('FlxSubState', flixel.FlxSubState);
+        set('FlxSound', flixel.sound.FlxSound);
+        set('FlxBar', flixel.ui.FlxBar);
+        set('FlxButton', flixel.ui.FlxButton);
+        set('FlxStringUtil', flixel.util.FlxStringUtil);
+        set('FlxText', flixel.text.FlxText);
+        set('FlxGroup', flixel.group.FlxGroup);
+        set('FlxSpriteGroup', flixel.group.FlxSpriteGroup);
+        set('FlxMath', flixel.math.FlxMath);
+        set('FlxRandom', flixel.math.FlxRandom);
+        set('FlxAnimation', flixel.animation.FlxAnimation);
+        set('FlxAnimationController', flixel.animation.FlxAnimationController);
+        set('FlxSlider', flixel.addons.ui.FlxSlider);
+        set('FlxSkewedSprite', flixel.addons.effects.FlxSkewedSprite);
+        set('FlxBackdrop', flixel.addons.display.FlxBackdrop);
+        set('add', FlxG.state.add);
+        set('remove', FlxG.state.remove);
+        set('insert', FlxG.state.insert);
+        set('this', FlxG.state);
+        set('FlxColor', FunkinHScriptColor);
+    }
+
+    public function presetFunkin()
+    {
+        set('MusicBeatState', MusicBeatState);
+        set('MusicBeatSubstate', MusicBeatSubstate);
+        set('Note', Note);
+        set('NoteSplash', NoteSplash);
+        set('StrumNote', StrumNote);
+        set('Alphabet', Alphabet);
+        set('AttachedSprite', AttachedSprite);
+        set('AttachedText', AttachedText);
+        set('BGSprite', BGSprite);
+        set('HealthIcon', HealthIcon);
+        set('Character', Character);
+        set('Paths', Paths);
+        set('Rating', Rating);
+        set('ClientPrefs', ClientPrefs);
+        set('ColorSwap', ColorSwap);
+        set('FlxUIDropDownMenuCustom', FlxUIDropDownMenuCustom);
+        set('CoolUtil', CoolUtil);
+        set('Conductor', Conductor);
+        set('DialogueBox', DialogueBoxPsych);
+        set('DialogueBoxPsych', DialogueBoxPsych);
+    }
+
+    public function presetLegacy()
+    {
+        set('TJSON', tjson.TJSON);
+		set('setVar', function(name:String, value:Dynamic)
 		{
 			PlayState.instance.variables.set(name, value);
 		});
-		interp.variables.set('getVar', function(name:String)
+		set('getVar', function(name:String)
 		{
 			var result:Dynamic = null;
 			if(PlayState.instance.variables.exists(name)) result = PlayState.instance.variables.get(name);
 			return result;
 		});
-		interp.variables.set('removeVar', function(name:String)
+		set('removeVar', function(name:String)
 		{
 			if(PlayState.instance.variables.exists(name))
 			{
@@ -3297,7 +3357,9 @@ class HScript
 			}
 			return false;
 		});
-	}
+    }
+
+	public function set(name:String, arg:Dynamic){interp.variables.set(name, arg);}
 
 	public function execute(codeToRun:String):Dynamic
 	{

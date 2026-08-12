@@ -28,6 +28,11 @@ typedef StageFile = {
 	var camera_speed:Null<Float>;
 }
 
+typedef StageShaders = {
+	var grayscale:Bool;
+	var crt:Bool;
+}
+
 class StageData {
 	public static var forceNextDirectory:String = null;
 	public static function loadDirectory(SONG:SwagSong) {

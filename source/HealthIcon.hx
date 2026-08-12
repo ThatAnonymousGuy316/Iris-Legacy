@@ -19,6 +19,17 @@ class HealthIcon extends FlxSprite
 		this.isPlayer = isPlayer;
 		changeIcon(char);
 		scrollFactor.set();
+
+		if (FlxG.state == PlayState.instance)
+		{
+			if ((PlayState.curStage == 'school' || PlayState.curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+			{
+				{
+					var grayscale = new GrayscaleShader();
+					this.shader = grayscale;
+				}
+			}
+		}
 	}
 
 	override function update(elapsed:Float)

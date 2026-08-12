@@ -12,6 +12,7 @@ class SaveVariables {
 	public var flashing:Bool = true;
 	public var camZooms:Bool = true;
 	public var globalAntialiasing:Bool = true;
+	public var missOnBad:Bool = false;
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
@@ -30,9 +31,9 @@ class SaveVariables {
 	public var hideHud:Bool = false;
 	public var noteSplashes:Bool = true;
 	public var arrowHSV:Array<Array<Int>> = [
-	  [0, 0, 0], // Left
-	  [0, 0, 0], // DOwn
-	  [0, 0, 0], // Up
+	  [255, 0, 0], // Left
+	  [-180, 0, 0], // DOwn
+	  [150, 0, 0], // Up
 	  [0, 0, 0]  // Right
 	];
 	public var comboOffset:Array<Int> = [0, 0, 0, 0]; // Rating X and Y, Combo X and Y
@@ -40,6 +41,7 @@ class SaveVariables {
 	public var healthBarAlpha:Float = 1;
 	public var lowQuality:Bool = false;
 	public var shaders:Bool = true;
+	public var shadersWeek6:Bool = true;
 	public var framerate:Int = 60;
 	// -- FEEDBACK OPTIONS -- //	
 	public var scoreZoom:Bool = true;

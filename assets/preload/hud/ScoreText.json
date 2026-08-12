@@ -1,0 +1,41 @@
+{
+    "x": 0,
+    "y": 640,
+    "yDownscroll": 50,
+    "xPlus": 300,
+    "yPlus": 0,
+    "daText": "Score: [SCORE] • Misses: [MISS] • Rating: [RATINGPERCENT]%",
+    "maxPercent": 100,
+    "decimals": 0,
+    "commaSeperated": true,
+    "ratings": {
+        "data1": "You Suck!",
+        "data2": "Shit",
+        "data3": "Bad",
+        "data4": "Bruh",
+        "data5": "Meh",
+        "data6": "Nice",
+        "data7": "Good",
+        "data8": "Great",
+        "data9": "Sick!",
+        "data10": "Perfect!!"
+    },
+    "replacements": {
+        "score": "[SCORE]",
+        "miss": "[MISS]",
+        "percent": "[RATINGPERCENT]",
+        "rating": "[RATING]",
+        "fc": "[FCRATING]",
+        "combo": "[COMBO]",
+        "health": "[HEALTH]"
+    },
+    "enableScoreBar": true,
+    "scoreBarTexture": "scoreBar",
+    "scoreBarAlpha": 0.5,
+    "scoreBarScale": 0.75,
+    "scoreBarX": 390,
+    "scoreBarY": 590,
+    "scoreBarYDownscroll": 0,
+    "scoreBarXPlus": 300,
+    "scoreBarYPlus": 0
+}

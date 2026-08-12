@@ -8,6 +8,8 @@ import flixel.util.FlxColor;
 import flash.display.BitmapData;
 import editors.ChartingState;
 
+import flixel.addons.effects.FlxSkewedSprite;
+
 using StringTools;
 
 typedef EventNote =
@@ -18,8 +20,11 @@ typedef EventNote =
 	value2:String
 }
 
-class Note extends FlxSprite
+class Note extends FlxSkewedSprite
 {
+	public var mesh:modcharting.SustainStrip = null;
+  	public var z:Float = 0;
+
 	public var extraData:Map<String, Dynamic> = [];
 
 	public var strumTime:Float = 0;
@@ -181,7 +186,6 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
-
 		x += (ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -196,6 +200,19 @@ class Note extends FlxSprite
 			texture = '';
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
+
+			
+			if (FlxG.state == PlayState.instance)
+			{
+				if ((PlayState.curStage == 'school' || PlayState.curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+				{
+					{
+						var grayscale = new GrayscaleShader();
+						this.shader = grayscale;
+					}
+				}
+			}
+
 
 			x += swagWidth * (noteData);
 			if (!isSustainNote && noteData > -1 && noteData < 4)

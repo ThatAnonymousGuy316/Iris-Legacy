@@ -63,6 +63,12 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Miss on Bad',
+			"If checked, a shit or bad rating gives you a miss",
+			'missOnBad',
+			'bool');
+		addOption(option);
+
 		var option:Option = new Option('Hitsound Volume',
 			'Funny notes does \"Tick!\" when you hit them."',
 			'hitsoundVolume',

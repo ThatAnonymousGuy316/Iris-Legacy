@@ -333,83 +333,105 @@ class CharacterEditorState extends MusicBeatState
 	}*/
 
 	var TemplateCharacter:String = '{
-			"animations": [
-				{
-					"loop": false,
-					"offsets": [
-						0,
-						0
-					],
-					"fps": 24,
-					"anim": "idle",
-					"indices": [],
-					"name": "Dad idle dance"
-				},
-				{
-					"offsets": [
-						0,
-						0
-					],
-					"indices": [],
-					"fps": 24,
-					"anim": "singLEFT",
-					"loop": false,
-					"name": "Dad Sing Note LEFT"
-				},
-				{
-					"offsets": [
-						0,
-						0
-					],
-					"indices": [],
-					"fps": 24,
-					"anim": "singDOWN",
-					"loop": false,
-					"name": "Dad Sing Note DOWN"
-				},
-				{
-					"offsets": [
-						0,
-						0
-					],
-					"indices": [],
-					"fps": 24,
-					"anim": "singUP",
-					"loop": false,
-					"name": "Dad Sing Note UP"
-				},
-				{
-					"offsets": [
-						0,
-						0
-					],
-					"indices": [],
-					"fps": 24,
-					"anim": "singRIGHT",
-					"loop": false,
-					"name": "Dad Sing Note RIGHT"
-				}
-			],
-			"no_antialiasing": false,
-			"image": "characters/DADDY_DEAREST",
-			"position": [
-				0,
-				0
-			],
-			"healthicon": "face",
-			"flip_x": false,
-			"healthbar_colors": [
-				161,
-				161,
-				161
-			],
-			"camera_position": [
-				0,
-				0
-			],
-			"sing_duration": 6.1,
-			"scale": 1
-		}';
+		"animations": [
+			{
+				"offsets": [
+					-329,
+					-179
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "singLEFT",
+				"indices": [],
+				"name": "left"
+			},
+			{
+				"offsets": [
+					-318,
+					-184
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "singDOWN",
+				"indices": [],
+				"name": "down"
+			},
+			{
+				"offsets": [
+					-302,
+					-184
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "singRIGHT",
+				"indices": [],
+				"name": "right"
+			},
+			{
+				"offsets": [
+					-324,
+					-177
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "singUP",
+				"indices": [],
+				"name": "up"
+			},
+			{
+				"offsets": [
+					-323,
+					-182
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "Hey!",
+				"indices": [],
+				"name": "Hey!"
+			},
+			{
+				"offsets": [
+					-322,
+					-179
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "Ahoh",
+				"indices": [],
+				"name": "Ahoh"
+			},
+			{
+				"offsets": [
+					-322,
+					-179
+				],
+				"loop": false,
+				"fps": 24,
+				"anim": "idle",
+				"indices": [],
+				"name": "Idle"
+			}
+		],
+		"no_antialiasing": false,
+		"image": "characters/Vee",
+		"position": [
+			-600,
+			-80
+		],
+		"healthicon": "Vee",
+		"flip_x": true,
+		"healthbar_colors": [
+			153,
+			207,
+			145
+		],
+		"camera_position": [
+			280,
+			250
+		],
+		"sing_duration": 4,
+		"scale": 1
+	}';
 
 	var charDropDown:FlxUIDropDownMenuCustom;
 	function addSettingsUI() {
@@ -1064,7 +1086,7 @@ class CharacterEditorState extends MusicBeatState
 			}
 		}
 		#else
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		characterList = [];
 		#end
 
 		charDropDown.setData(FlxUIDropDownMenuCustom.makeStrIdLabelArray(characterList, true));
@@ -1287,16 +1309,16 @@ class CharacterEditorState extends MusicBeatState
 			"healthbar_colors": char.healthColorArray
 		};
 
-		var data:String = Json.stringify(json, "\t");
+		var saveFolder:String = Sys.getCwd() + "/game/characters";
+		var charName = haxe.io.Path.withoutExtension(haxe.io.Path.withoutDirectory(char.imageFile));
 
-		if (data.length > 0)
-		{
-			_file = new FileReference();
-			_file.addEventListener(Event.COMPLETE, onSaveComplete);
-			_file.addEventListener(Event.CANCEL, onSaveCancel);
-			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data, daAnim + ".json");
-		}
+		if (!FileSystem.exists(saveFolder))
+			FileSystem.createDirectory(saveFolder);
+
+			File.saveContent(
+			saveFolder + '/${charName}.json',
+			Json.stringify(json, null, "\t")
+		);
 	}
 
 	function ClipboardAdd(prefix:String = ''):String {

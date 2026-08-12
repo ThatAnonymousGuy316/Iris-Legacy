@@ -55,6 +55,12 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Week 6 Shaders',
+			'If unchecked, disables The Shaders in week 6', //Description
+			'shadersWeek6',
+			'bool');
+		addOption(option);
+
 		#if !html5 //Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
 		var option:Option = new Option('Framerate',
 			"Pretty self explanatory, isn't it?",
@@ -62,8 +68,8 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 			'int');
 		addOption(option);
 
-		option.minValue = 60;
-		option.maxValue = 240;
+		option.minValue = 2;
+		option.maxValue = 1000;
 		option.displayFormat = '%v FPS';
 		option.onChange = onChangeFramerate;
 		#end

@@ -6,7 +6,9 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
-class StrumNote extends FlxSprite
+import flixel.addons.effects.FlxSkewedSprite;
+
+class StrumNote extends FlxSkewedSprite
 {
 	private var colorSwap:ColorSwap;
 	public var resetAnim:Float = 0;
@@ -32,6 +34,16 @@ class StrumNote extends FlxSprite
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
+		if (FlxG.state == PlayState.instance)
+		{
+			if ((PlayState.curStage == 'school' || PlayState.curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
+			{
+				{
+					var grayscale = new GrayscaleShader();
+					this.shader = grayscale;
+				}
+			}
+		}
 		super(x, y);
 
 		var skin:String = 'NOTE_assets';
