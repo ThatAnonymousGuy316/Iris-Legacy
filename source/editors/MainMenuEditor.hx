@@ -56,6 +56,10 @@ class MainMenuEditor extends MusicBeatState
 	var versionText:FlxUIInputText;
     var versionTextA:FlxText;
 
+	var addObject:FlxButton;
+	var objectText:FlxUIInputText;
+    var objectTextA:FlxText;
+
 	override public function create()
 	{
 		super.create();
@@ -212,6 +216,64 @@ class MainMenuEditor extends MusicBeatState
 			}
 		);
 
+		objectText = new FlxUIInputText(
+			15,
+			170,
+			200,
+			"",
+			8
+		);
+
+		addObject = new FlxButton(
+			objectText.x + 210,
+			objectText.y - 3,
+			"Add Object",
+			function()
+			{
+				var newObject:OptionDataJson = {
+					name: objectText.text,
+					x: 0,
+					y: 0,
+				};
+				optionShit.push(newObject.name);
+				var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
+
+				var menuItem = new FlxSprite(
+					newObject.x,
+					newObject.y
+				);
+
+				menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
+				menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + newObject.name);
+
+				menuItem.animation.addByPrefix(
+					'idle',
+					newObject.name + " basic",
+					24
+				);
+
+				menuItem.animation.addByPrefix(
+					'selected',
+					newObject.name + " white",
+					24
+				);
+
+				menuItem.animation.play('idle');
+
+				var scroll:Float = (optionShit.length - 4) * 0.135;
+
+				if (optionShit.length < 6)
+					scroll = 0;
+
+				menuItem.scrollFactor.set(0, scroll);
+				menuItem.updateHitbox();
+
+				menuItems.add(menuItem);
+
+				menuJson.options.push(newObject);
+			}
+		);
+
 		add(imageBackgroundInput);
 		add(reloadImage);
 		add(allowBackgroundMove);
@@ -223,6 +285,9 @@ class MainMenuEditor extends MusicBeatState
 
 		add(versionText);
 		add(changeVersion);
+
+		add(objectText);
+		add(addObject);
 
         backgroundText = new FlxText(
             15,
@@ -251,6 +316,15 @@ class MainMenuEditor extends MusicBeatState
 
 		add(versionTextA);
 
+		objectTextA = new FlxText(
+            15,
+            objectText.y - 18,
+            0,
+            'Object Name:'
+        );
+
+		add(objectTextA);
+
 	}
 
     public function saveJson()
@@ -273,6 +347,7 @@ class MainMenuEditor extends MusicBeatState
 
 		handleBackgroundDragging();
 		handleMenuItemDragging();
+		handleMenuItemRemoval();
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
@@ -294,7 +369,41 @@ class MainMenuEditor extends MusicBeatState
 			changeVersion.visible = !changeVersion.visible;
             versionText.visible = !versionText.visible;
             versionTextA.visible = !versionTextA.visible;
+			addObject.visible = !addObject.visible;
+            objectText.visible = !objectText.visible;
+            objectTextA.visible = !objectTextA.visible;
         }
+	}
+
+	function handleMenuItemRemoval()
+	{
+		if (!canMenuItemMove)
+			return;
+
+		if (FlxG.mouse.justPressedRight)
+		{
+			for (i in 0...menuItems.members.length)
+			{
+				var item = menuItems.members[i];
+
+				if (item != null && FlxG.mouse.overlaps(item))
+				{
+					menuItems.remove(item, true);
+
+					menuJson.options.splice(i, 1);
+
+					optionShit.splice(i, 1);
+
+					if (draggedItem == item)
+					{
+						draggingItem = false;
+						draggedItem = null;
+					}
+
+					break;
+				}
+			}
+		}
 	}
 
 	function handleBackgroundDragging()
