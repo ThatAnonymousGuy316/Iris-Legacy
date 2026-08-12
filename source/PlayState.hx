@@ -5629,6 +5629,10 @@ class PlayState extends MusicBeatState
 
 	public function callOnLuas(event:String, args:Array<Dynamic>, ignoreStops = true, exclusions:Array<String> = null):Dynamic
 	{
+		for (hscript in hscriptArray)
+		{
+			hscript.call(event, args);
+		}
 		var returnVal:Dynamic = FunkinLua.Function_Continue;
 		#if LUA_ALLOWED
 		if (exclusions == null)

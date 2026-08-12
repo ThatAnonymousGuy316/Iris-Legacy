@@ -30,6 +30,7 @@ class SaveVariables {
 	// -- VISUAL OPTIONS -- //
 	public var hideHud:Bool = false;
 	public var noteSplashes:Bool = true;
+	public var bounce:Bool = false;
 	public var arrowHSV:Array<Array<Int>> = [
 	  [255, 0, 0], // Left
 	  [-180, 0, 0], // DOwn
