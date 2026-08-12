@@ -365,6 +365,7 @@ class PlayState extends MusicBeatState
 	public static var instance:PlayState;
 
 	public var luaArray:Array<FunkinLua> = [];
+	public var hscriptArray:Array<FunkinHScript> = [];
 
 	private var luaDebugGroup:FlxTypedGroup<DebugLuaText>;
 
@@ -994,6 +995,11 @@ class PlayState extends MusicBeatState
 						luaArray.push(new FunkinLua(folder + file));
 						filesPushed.push(file);
 					}
+					if (file.endsWith('.hxs') && !filesPushed.contains(file))
+					{
+						hscriptArray.push(new FunkinHScript(folder + file));
+						filesPushed.push(file);
+					}
 				}
 			}
 		}
@@ -1001,24 +1007,8 @@ class PlayState extends MusicBeatState
 
 		// STAGE SCRIPTS
 		#if (MODS_ALLOWED && LUA_ALLOWED)
-		var doPush:Bool = false;
-		var luaFile:String = 'stages/' + curStage + '.lua';
-		if (FileSystem.exists(Paths.modFolders(luaFile)))
-		{
-			luaFile = Paths.modFolders(luaFile);
-			doPush = true;
-		}
-		else
-		{
-			luaFile = Paths.getPreloadPath(luaFile);
-			if (FileSystem.exists(luaFile))
-			{
-				doPush = true;
-			}
-		}
-
-		if (doPush)
-			luaArray.push(new FunkinLua(luaFile));
+		runLua('stages/' + curStage);
+		runHX('stages/' + curStage);
 		#end
 
 		var gfVersion:String = SONG.gfVersion;
@@ -1359,51 +1349,13 @@ class PlayState extends MusicBeatState
 		#if LUA_ALLOWED
 		for (notetype in noteTypeMap.keys())
 		{
-			#if MODS_ALLOWED
-			var luaToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + '.lua');
-			if (FileSystem.exists(luaToLoad))
-			{
-				luaArray.push(new FunkinLua(luaToLoad));
-			}
-			else
-			{
-				luaToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
-				if (FileSystem.exists(luaToLoad))
-				{
-					luaArray.push(new FunkinLua(luaToLoad));
-				}
-			}
-			#elseif sys
-			var luaToLoad:String = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
-			if (OpenFlAssets.exists(luaToLoad))
-			{
-				luaArray.push(new FunkinLua(luaToLoad));
-			}
-			#end
+			runLua('custom_notetypes/' + notetype);
+			runHX('custom_notetypes/' + notetype);
 		}
 		for (event in eventPushedMap.keys())
 		{
-			#if MODS_ALLOWED
-			var luaToLoad:String = Paths.modFolders('custom_events/' + event + '.lua');
-			if (FileSystem.exists(luaToLoad))
-			{
-				luaArray.push(new FunkinLua(luaToLoad));
-			}
-			else
-			{
-				luaToLoad = Paths.getPreloadPath('custom_events/' + event + '.lua');
-				if (FileSystem.exists(luaToLoad))
-				{
-					luaArray.push(new FunkinLua(luaToLoad));
-				}
-			}
-			#elseif sys
-			var luaToLoad:String = Paths.getPreloadPath('custom_events/' + event + '.lua');
-			if (OpenFlAssets.exists(luaToLoad))
-			{
-				luaArray.push(new FunkinLua(luaToLoad));
-			}
-			#end
+			runLua('custom_events/' + notetype);
+			runHX('custom_events/' + notetype);
 		}
 		#end
 		noteTypeMap.clear();
@@ -1436,6 +1388,11 @@ class PlayState extends MusicBeatState
 					if (file.endsWith('.lua') && !filesPushed.contains(file))
 					{
 						luaArray.push(new FunkinLua(folder + file));
+						filesPushed.push(file);
+					}
+					if (file.endsWith('.hxs') && !filesPushed.contains(file))
+					{
+						hscriptArray.push(new FunkinHScript(folder + file));
 						filesPushed.push(file);
 					}
 				}
@@ -1573,6 +1530,64 @@ class PlayState extends MusicBeatState
 		Paths.clearUnusedMemory();
 
 		CustomFadeTransition.nextCamera = camOther;
+	}
+
+	public function runLua(file:String)
+	{
+		var doPush:Bool = false;
+		var luaFile:String = file + '.lua';
+		if (FileSystem.exists(Paths.modFolders(luaFile)))
+		{
+			luaFile = Paths.modFolders(luaFile);
+			doPush = true;
+		}
+		else
+		{
+			luaFile = Paths.getPreloadPath(luaFile);
+			if (FileSystem.exists(luaFile))
+			{
+				doPush = true;
+			}
+		}
+
+		if (doPush)
+		{
+			for (script in luaArray)
+			{
+				if (script.scriptName == luaFile)
+					return;
+			}
+			luaArray.push(new FunkinLua(luaFile));
+		}
+	}
+
+	public function runHX(file:String)
+	{
+		var doPush:Bool = false;
+		var luaFile:String = file + '.hxs';
+		if (FileSystem.exists(Paths.modFolders(luaFile)))
+		{
+			luaFile = Paths.modFolders(luaFile);
+			doPush = true;
+		}
+		else
+		{
+			luaFile = Paths.getPreloadPath(luaFile);
+			if (FileSystem.exists(luaFile))
+			{
+				doPush = true;
+			}
+		}
+
+		if (doPush)
+		{
+			for (script in hscriptArray)
+			{
+				if (script.scriptName == luaFile)
+					return;
+			}
+			hscriptArray.push(new FunkinHScript(luaFile));
+		}
 	}
 
 	#if (!flash && sys)
@@ -1761,41 +1776,8 @@ class PlayState extends MusicBeatState
 
 	function startCharacterLua(name:String)
 	{
-		#if LUA_ALLOWED
-		var doPush:Bool = false;
-		var luaFile:String = 'characters/' + name + '.lua';
-		#if MODS_ALLOWED
-		if (FileSystem.exists(Paths.modFolders(luaFile)))
-		{
-			luaFile = Paths.modFolders(luaFile);
-			doPush = true;
-		}
-		else
-		{
-			luaFile = Paths.getPreloadPath(luaFile);
-			if (FileSystem.exists(luaFile))
-			{
-				doPush = true;
-			}
-		}
-		#else
-		luaFile = Paths.getPreloadPath(luaFile);
-		if (Assets.exists(luaFile))
-		{
-			doPush = true;
-		}
-		#end
-
-		if (doPush)
-		{
-			for (script in luaArray)
-			{
-				if (script.scriptName == luaFile)
-					return;
-			}
-			luaArray.push(new FunkinLua(luaFile));
-		}
-		#end
+		runLua('characters/' + name);
+		runHX('characters/' + name);
 	}
 
 	public function getLuaObject(tag:String, text:Bool = true):FlxSprite
