@@ -64,7 +64,7 @@ class CustomState extends MusicBeatState
 {
     public var stateName:String;
     public var daJson:StateJson;
-    public var stateObjects:FlxTypedGroup<FlxBasic> = [];
+    public var stateObjects:FlxTypedGroup<FlxBasic>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
     public function new(stateName:String)
     {
