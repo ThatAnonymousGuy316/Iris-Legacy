@@ -52,6 +52,10 @@ import hscript.Interp;
 import hscript.Expr;
 #end
 
+import haxe.ds.StringMap;
+import haxe.ds.ObjectMap;
+import haxe.ds.IntMap;
+
 #if desktop
 import Discord;
 #end
@@ -3271,6 +3275,9 @@ class HScript
         set('StringTools', StringTools);
         set('Dynamic', Dynamic);
         set('Json', haxe.Json);
+        set('StringMap', StringMap);
+        set('ObjectMap', ObjectMap);
+        set('IntMap', IntMap);
         set('importClass', function(className:String)
         {
             var classRef = Type.resolveClass(className);

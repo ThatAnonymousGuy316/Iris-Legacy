@@ -39,6 +39,9 @@ class FunkinHScript
         set('StringTools', StringTools);
         set('Dynamic', Dynamic);
         set('Json', haxe.Json);
+        set('StringMap', StringMap);
+        set('ObjectMap', ObjectMap);
+        set('IntMap', IntMap);
         set('importClass', function(className:String)
         {
             var classRef = Type.resolveClass(className);
