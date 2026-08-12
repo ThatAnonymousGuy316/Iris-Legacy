@@ -13,6 +13,7 @@ class SaveVariables {
 	public var camZooms:Bool = true;
 	public var globalAntialiasing:Bool = true;
 	public var missOnBad:Bool = false;
+	public var hitsoundType:String = 'Default';
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;

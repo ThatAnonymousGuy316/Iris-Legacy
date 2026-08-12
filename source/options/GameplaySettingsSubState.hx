@@ -69,6 +69,13 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Hitsound:',
+			"what your hitsound is!",
+			'hitsoundType',
+			'string',
+			['Default', 'Fart', 'Pluh', 'Scream']);
+		addOption(option);
+
 		var option:Option = new Option('Hitsound Volume',
 			'Funny notes does \"Tick!\" when you hit them."',
 			'hitsoundVolume',

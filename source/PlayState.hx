@@ -5099,7 +5099,16 @@ class PlayState extends MusicBeatState
 
 		note.wasGoodHit = true;
 		if (ClientPrefs.data.hitsoundVolume > 0 && !note.hitsoundDisabled)
-			FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
+		{
+			if (ClientPrefs.data.hitsoundType == 'Scream')
+				FlxG.sound.play(Paths.sound('psycho-scream-soundbible'), ClientPrefs.data.hitsoundVolume);
+			else if (ClientPrefs.data.hitsoundType == 'Pluh')
+				FlxG.sound.play(Paths.sound('pluh'), ClientPrefs.data.hitsoundVolume);
+			else if (ClientPrefs.data.hitsoundType == 'Fart')
+				FlxG.sound.play(Paths.sound('perfect-fart'), ClientPrefs.data.hitsoundVolume);
+			else
+				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
+		}
 
 		if (note.hitCausesMiss)
 		{
