@@ -43,7 +43,7 @@ class CustomState extends MusicBeatState
             if (object.hasFrames)
             {
                 sprite.frames = Paths.getSparrowAtlas(object.texture);
-                sprite.animation.addByPrefix(object.animationPrefix, object.animationPrefix, object.animationFramerate, object.animationLoops)
+                sprite.animation.addByPrefix(object.animationPrefix, object.animationPrefix, object.animationFramerate, object.animationLoops);
                 sprite.animation.play(object.animationPrefix);
             }
             else
