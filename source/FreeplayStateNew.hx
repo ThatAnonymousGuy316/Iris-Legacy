@@ -39,11 +39,15 @@ class FreeplayStateNew extends MusicBeatState
 
     var bg:FlxSprite;
 
-    var freeplaySongs:Array<String> = [];
+    var freeplaySongs:Array<{
+        name:String,
+        character:String,
+        folder:String
+    }> = [];
 
     var diffColor = [FlxColor.GREEN, FlxColor.YELLOW, FlxColor.RED, FlxColor.PINK, FlxColor.PURPLE];
 
-    public var curDifficulty:Int = -1;
+    public static var curDifficulty:Int = -1;
 
     public var grpSongs:FlxTypedGroup<FlxText>;
 
@@ -51,7 +55,7 @@ class FreeplayStateNew extends MusicBeatState
 
     var freeplaySelector:FlxSprite;
 
-    var curSelected:Int = 0;
+    public static var curSelected:Int = 0;
     var listOffset:Float = 0;
     var spacing:Float = 80;
 
@@ -59,6 +63,8 @@ class FreeplayStateNew extends MusicBeatState
 
     var leftDiffSel:FlxSprite;
     var rightDiffSel:FlxSprite;
+
+    var freeplayArtwork:FlxSprite;
 
     function onCreate()
     {
@@ -82,7 +88,11 @@ class FreeplayStateNew extends MusicBeatState
 
             for (song in leWeek.songs)
             {
-                freeplaySongs.push(song[0]);
+                freeplaySongs.push({
+                    name: song[0],
+                    character: song[1],
+                    folder: Paths.currentModDirectory
+                });
             }
         }
 
@@ -91,8 +101,12 @@ class FreeplayStateNew extends MusicBeatState
         bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
         bg.antialiasing = ClientPrefs.data.globalAntialiasing;
         bg.updateHitbox();
-        bg.color = 0xFFea71fd;
         add(bg);
+
+        freeplayArtwork = new FlxSprite(530).loadGraphic(Paths.image('freeplay/artwork/dad'));
+        freeplayArtwork.antialiasing = ClientPrefs.data.globalAntialiasing;
+        freeplayArtwork.updateHitbox();
+        add(freeplayArtwork);
 
         grpSongs = new FlxTypedGroup<FlxText>();
         add(grpSongs);
@@ -103,7 +117,7 @@ class FreeplayStateNew extends MusicBeatState
             songText.setFormat(Paths.font("pah.ttf"), 64, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
             songText.scrollFactor.set();
             songText.borderSize = 1.25;
-            songText.text = freeplaySongs[i];
+            songText.text = freeplaySongs[i].name;
             grpSongs.add(songText);
         }
 
@@ -125,18 +139,18 @@ class FreeplayStateNew extends MusicBeatState
         leftDiffSel.animation.play('idle');
         add(leftDiffSel);
 
-        difficultyText = new FlxSprite(leftDiffSel.x + 65);
-        difficultyText.frames = Paths.getSparrowAtlas('freeplay/difficulty');
-        difficultyText.animation.addByPrefix('easy', 'EASY', 24, false);
-        difficultyText.animation.addByPrefix('normal', 'NORMAL', 24, false);
-        difficultyText.animation.addByPrefix('hard', 'HARD', 24, false);
-        difficultyText.animation.addByPrefix('erect', 'ERECT', 24, false);
-        difficultyText.animation.addByPrefix('nightmare', 'NIGHTMARE', 24, false);
-        difficultyText.animation.addByPrefix('mercy', 'MERCY', 24, false);
-        difficultyText.animation.play('normal');
+        difficultyText = new FlxSprite(leftDiffSel.x + 65, 10);
+        difficultyText.loadGraphic(Paths.image('freeplay/difficulties/NORMAL'));
         add(difficultyText);
 
-        curDifficulty = CoolUtil.difficulties.indexOf(CoolUtil.defaultDifficulty);
+        rightDiffSel = new FlxSprite(difficultyText.x + 240);
+        rightDiffSel.frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
+        rightDiffSel.animation.addByPrefix('idle', 'arrow pointer loop', 24, true);
+        rightDiffSel.animation.play('idle');
+        rightDiffSel.flipX = true;
+        add(rightDiffSel);
+
+        curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(CoolUtil.defaultDifficulty)));
 
         if (curDifficulty < 0)
             curDifficulty = 0;
@@ -185,11 +199,37 @@ class FreeplayStateNew extends MusicBeatState
             updateList();
         }
 
+        if (controls.ACCEPT)
+        {
+            onAccept();
+        }
+
 		if (controls.UI_LEFT_P)
 			changeDiff(-1);
 		else if (controls.UI_RIGHT_P)
 			changeDiff(1);
 		else if (controls.UI_UP_P || controls.UI_DOWN_P) changeDiff();
+    }
+
+    function onAccept()
+    {
+        persistentUpdate = false;
+
+        Paths.currentModDirectory = freeplaySongs[curSelected].folder;
+
+        var songLowercase:String = Paths.formatToSongPath(freeplaySongs[curSelected].name);
+        var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
+
+        trace('Song: ' + songLowercase);
+        trace('Mod directory: ' + Paths.currentModDirectory);
+
+        PlayState.SONG = Song.loadFromJson(poop, songLowercase);
+        PlayState.isStoryMode = false;
+        PlayState.storyDifficulty = curDifficulty;
+
+        LoadingState.loadAndSwitchState(new PlayState());
+
+        FlxG.sound.music.volume = 0;
     }
 
     function changeDiff(change:Int = 0)
@@ -202,9 +242,33 @@ class FreeplayStateNew extends MusicBeatState
         if (curDifficulty >= CoolUtil.difficulties.length)
             curDifficulty = 0;
 
-        PlayState.storyDifficulty = curDifficulty;
+		CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
+		var diffStr:String = WeekData.getCurrentWeek().difficulties;
+		if(diffStr != null) diffStr = diffStr.trim(); //Fuck you HTML5
 
-        difficultyText.animation.play(CoolUtil.difficulties[curDifficulty].toLowerCase());
+		if(diffStr != null && diffStr.length > 0)
+		{
+			var diffs:Array<String> = diffStr.split(',');
+			var i:Int = diffs.length - 1;
+			while (i > 0)
+			{
+				if(diffs[i] != null)
+				{
+					diffs[i] = diffs[i].trim();
+					if(diffs[i].length < 1) diffs.remove(diffs[i]);
+				}
+				--i;
+			}
+
+			if(diffs.length > 0 && diffs[0].length > 0)
+			{
+				CoolUtil.difficulties = diffs;
+			}
+        }
+
+        difficultyText.loadGraphic(Paths.image('freeplay/difficulties/${CoolUtil.difficulties[curDifficulty].toUpperCase()}'));
+
+        PlayState.storyDifficulty = curDifficulty;
     }
 
     function updateList()
@@ -220,6 +284,9 @@ class FreeplayStateNew extends MusicBeatState
 
         freeplaySelector.x = selectedSong.x + selectedSong.width + 10;
         freeplaySelector.y = selectedSong.y;
+
+        bg.loadGraphic(Paths.image('freeplay/bgs/${freeplaySongs[curSelected].character}'));
+        freeplayArtwork.loadGraphic(Paths.image('freeplay/artwork/${freeplaySongs[curSelected].character}'));
     }
 
     function weekIsLocked(name:String):Bool

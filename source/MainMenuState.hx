@@ -216,9 +216,9 @@ class MainMenuState extends MusicBeatState
 										MusicBeatState.switchState(new StoryMenuState());
 									case 'freeplay':
 										if (FlxG.keys.pressed.CONTROL)
-											MusicBeatState.switchState(new FreeplayStateNew());
-										else
 											MusicBeatState.switchState(new FreeplayState());
+										else
+											MusicBeatState.switchState(new FreeplayStateNew());
 									case 'credits':
 										MusicBeatState.switchState(new CreditsState());
 									case 'options':
