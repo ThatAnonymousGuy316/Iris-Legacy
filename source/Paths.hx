@@ -51,7 +51,8 @@ class Paths
 		'splashes',
 		'hud',
 		'android',
-		'noteskins'
+		'noteskins',
+		'menuButtons'
 	];
 	#end
 

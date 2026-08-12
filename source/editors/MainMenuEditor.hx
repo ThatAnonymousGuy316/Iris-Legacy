@@ -377,9 +377,6 @@ class MainMenuEditor extends MusicBeatState
 
 	function handleMenuItemRemoval()
 	{
-		if (!canMenuItemMove)
-			return;
-
 		if (FlxG.mouse.justPressedRight)
 		{
 			for (i in 0...menuItems.members.length)
@@ -389,9 +386,7 @@ class MainMenuEditor extends MusicBeatState
 				if (item != null && FlxG.mouse.overlaps(item))
 				{
 					menuItems.remove(item, true);
-
 					menuJson.options.splice(i, 1);
-
 					optionShit.splice(i, 1);
 
 					if (draggedItem == item)

@@ -212,6 +212,9 @@ class MainMenuState extends MusicBeatState
 
 								switch (daChoice)
 								{
+									default:
+										runLua('menuButtons/${daChoice}');
+										runHX('menuButtons/${daChoice}');
 									case 'story_mode':
 										MusicBeatState.switchState(new StoryMenuState());
 									case 'freeplay':
@@ -239,6 +242,54 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+	}
+
+	public function runLua(file:String, script:FunkinLua)
+	{
+		var doPush:Bool = false;
+		var luaFile:String = file + '.lua';
+		if (FileSystem.exists(Paths.modFolders(luaFile)))
+		{
+			luaFile = Paths.modFolders(luaFile);
+			doPush = true;
+		}
+		else
+		{
+			luaFile = Paths.getPreloadPath(luaFile);
+			if (FileSystem.exists(luaFile))
+			{
+				doPush = true;
+			}
+		}
+
+		if (doPush)
+		{
+			script = new FunkinLua(luaFile);
+		}
+	}
+
+	public function runHX(file:String, script:FunkinHScript)
+	{
+		var doPush:Bool = false;
+		var luaFile:String = file + '.hxs';
+		if (FileSystem.exists(Paths.modFolders(luaFile)))
+		{
+			luaFile = Paths.modFolders(luaFile);
+			doPush = true;
+		}
+		else
+		{
+			luaFile = Paths.getPreloadPath(luaFile);
+			if (FileSystem.exists(luaFile))
+			{
+				doPush = true;
+			}
+		}
+
+		if (doPush)
+		{
+			script = new FunkinHScript(luaFile);
+		}
 	}
 
 	function changeItem(huh:Int = 0)

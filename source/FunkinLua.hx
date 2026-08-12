@@ -229,6 +229,28 @@ class FunkinLua {
 		set('buildTarget', 'unknown');
 		#end
 
+		Lua_helper.add_callback(lua, 'goToStoryMode', function(){
+            MusicBeatState.switchState(new StoryMenuState());
+        });
+        Lua_helper.add_callback(lua, 'goToFreeplay', function(){
+            MusicBeatState.switchState(new FreeplayStateNew());
+        });
+        Lua_helper.add_callback(lua, 'goToFreeplayLegacy', function(){
+            MusicBeatState.switchState(new FreeplayState());
+        });
+        Lua_helper.add_callback(lua, 'goToCredits', function(){
+            MusicBeatState.switchState(new CreditsState());
+        });
+        Lua_helper.add_callback(lua, 'goToOptions', function(){
+            LoadingState.loadAndSwitchState(new options.OptionsState());
+        });
+        Lua_helper.add_callback(lua, 'goToMainMenu', function(){
+            MusicBeatState.switchState(new MainMenuState());
+        });
+        Lua_helper.add_callback(lua, 'goToState', function(state:String){
+            MusicBeatState.switchState(new CustomState(state));
+        });
+
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
 			if(pauseGame)

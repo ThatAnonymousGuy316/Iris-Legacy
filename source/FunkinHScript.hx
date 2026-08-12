@@ -30,7 +30,7 @@ class FunkinHScript
         presetLegacy();
 		parser.allowTypes = true;
         interp.execute(parser.parseString(File.getContent(filePath), filePath));
-        call('onScript', []);
+        call('onCreate', []);
     }
 
     public function presetHaxe()
@@ -109,6 +109,27 @@ class FunkinHScript
 
     public function presetLegacy()
     {
+        set('goToStoryMode', function(){
+            MusicBeatState.switchState(new StoryMenuState());
+        });
+        set('goToFreeplay', function(){
+            MusicBeatState.switchState(new FreeplayStateNew());
+        });
+        set('goToFreeplayLegacy', function(){
+            MusicBeatState.switchState(new FreeplayState());
+        });
+        set('goToCredits', function(){
+            MusicBeatState.switchState(new CreditsState());
+        });
+        set('goToOptions', function(){
+            LoadingState.loadAndSwitchState(new options.OptionsState());
+        });
+        set('goToMainMenu', function(){
+            MusicBeatState.switchState(new MainMenuState());
+        });
+        set('goToState', function(state:String){
+            MusicBeatState.switchState(new CustomState(state));
+        });
         set('GrayscaleShader', GrayscaleShader);
         set('CRTShader', CRTShader);
         
