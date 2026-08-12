@@ -1,6 +1,43 @@
 package;
 
 import haxe.Json;
+import Section;
+import Song;
+import WiggleEffect.WiggleEffectType;
+import flixel.FlxBasic;
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.FlxSubState;
+import flixel.addons.effects.FlxTrail;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.sound.FlxSound;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
+import flixel.util.FlxColor;
+import flixel.util.FlxSort;
+import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
+import openfl.utils.Assets as OpenFlAssets;
+import editors.ChartingState;
+import editors.CharacterEditorState;
+import flixel.group.FlxSpriteGroup;
+import flixel.input.keyboard.FlxKey;
+import Note.EventNote;
+import openfl.events.KeyboardEvent;
+import flixel.util.FlxSave;
+import animateatlas.AtlasFrameMaker;
+import Achievements;
+import StageData;
+import FunkinLua;
+import DialogueBoxPsych;
 
 typedef StateJson = {
     var objects:Array<StateObject>;
