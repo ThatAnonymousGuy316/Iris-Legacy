@@ -1261,7 +1261,7 @@ class ChartingState extends MusicBeatState
 		check_mute_vocals.checked = false;
 		check_mute_vocals.callback = function()
 		{
-			if(vocals != null) {
+			if(vocals != null && _song.needsVoices) {
 				var vol:Float = 1;
 
 				if (check_mute_vocals.checked)
@@ -1377,7 +1377,7 @@ class ChartingState extends MusicBeatState
 		{
 			FlxG.sound.music.pause();
 			Conductor.songPosition = 0;
-			if(vocals != null) {
+			if(vocals != null && _song.needsVoices) {
 				vocals.pause();
 				vocals.time = 0;
 			}
@@ -1385,7 +1385,8 @@ class ChartingState extends MusicBeatState
 			curSec = 0;
 			updateGrid();
 			updateSectionUI();
-			vocals.play();
+			if(vocals != null && _song.needsVoices)
+				vocals.play();
 		};
 	}
 
@@ -1466,7 +1467,8 @@ class ChartingState extends MusicBeatState
 			}
 			else if (wname == 'voices_volume')
 			{
-				vocals.volume = nums.value;
+				if(vocals != null && _song.needsVoices)
+					vocals.volume = nums.value;
 			}
 		}
 		else if(id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText)) {
@@ -1678,7 +1680,7 @@ class ChartingState extends MusicBeatState
 				FlxG.mouse.visible = false;
 				PlayState.SONG = _song;
 				FlxG.sound.music.stop();
-				if(vocals != null) vocals.stop();
+				if(vocals != null && _song.needsVoices) vocals.stop();
 
 				//if(_song.stage == null) _song.stage = stageDropDown.selectedLabel;
 				StageData.loadDirectory(_song);
@@ -1741,11 +1743,11 @@ class ChartingState extends MusicBeatState
 				if (FlxG.sound.music.playing)
 				{
 					FlxG.sound.music.pause();
-					if(vocals != null) vocals.pause();
+					if(vocals != null && _song.needsVoices) vocals.pause();
 				}
 				else
 				{
-					if(vocals != null) {
+					if(vocals != null && _song.needsVoices) {
 						vocals.play();
 						vocals.pause();
 						vocals.time = FlxG.sound.music.time;
@@ -1783,7 +1785,7 @@ class ChartingState extends MusicBeatState
 							FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
 						}
 					}
-				if(vocals != null) {
+				if(vocals != null && _song.needsVoices) {
 					vocals.pause();
 					vocals.time = FlxG.sound.music.time;
 				}
@@ -1810,7 +1812,7 @@ class ChartingState extends MusicBeatState
 				else
 					FlxG.sound.music.time += daTime;
 
-				if(vocals != null) {
+				if(vocals != null && _song.needsVoices) {
 					vocals.pause();
 					vocals.time = FlxG.sound.music.time;
 				}
@@ -1900,7 +1902,7 @@ class ChartingState extends MusicBeatState
 						feces = Conductor.beatToSeconds(fuck);
 					}
 					FlxTween.tween(FlxG.sound.music, {time:feces}, 0.1, {ease:FlxEase.circOut});
-					if(vocals != null) {
+					if(vocals != null && _song.needsVoices) {
 						vocals.pause();
 						vocals.time = FlxG.sound.music.time;
 					}
@@ -2432,7 +2434,7 @@ class ChartingState extends MusicBeatState
 			curSec = 0;
 		}
 
-		if(vocals != null) {
+		if(vocals != null && _song.needsVoices) {
 			vocals.pause();
 			vocals.time = FlxG.sound.music.time;
 		}
@@ -2453,7 +2455,7 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 
 				FlxG.sound.music.time = sectionStartTime();
-				if(vocals != null) {
+				if(vocals != null && _song.needsVoices) {
 					vocals.pause();
 					vocals.time = FlxG.sound.music.time;
 				}

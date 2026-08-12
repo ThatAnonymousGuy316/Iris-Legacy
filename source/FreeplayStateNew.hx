@@ -55,7 +55,7 @@ class FreeplayStateNew extends MusicBeatState
     var listOffset:Float = 0;
     var spacing:Float = 80;
 
-    var difficultyText:FlxText;
+    var difficultyText:FlxSprite;
 
     var leftDiffSel:FlxSprite;
     var rightDiffSel:FlxSprite;
@@ -119,17 +119,21 @@ class FreeplayStateNew extends MusicBeatState
         bfdj.animation.play('idle');
         add(bfdj);
 
-        leftDiffSel = new FlxSprite(300);
+        leftDiffSel = new FlxSprite(560);
         leftDiffSel.frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
         leftDiffSel.animation.addByPrefix('idle', 'arrow pointer loop', 24, true);
         leftDiffSel.animation.play('idle');
         add(leftDiffSel);
 
-        difficultyText = new FlxText(0, 0, FlxG.width, "Test", 20);
-        difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[1], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        difficultyText.scrollFactor.set();
-        difficultyText.x = diffTextPlus;
-        difficultyText.borderSize = 1.25;
+        difficultyText = new FlxSprite(leftDiffSel.x + 65);
+        difficultyText.frames = Paths.getSparrowAtlas('freeplay/difficulty');
+        difficultyText.animation.addByPrefix('easy', 'EASY', 24, false);
+        difficultyText.animation.addByPrefix('normal', 'NORMAL', 24, false);
+        difficultyText.animation.addByPrefix('hard', 'HARD', 24, false);
+        difficultyText.animation.addByPrefix('erect', 'ERECT', 24, false);
+        difficultyText.animation.addByPrefix('nightmare', 'NIGHTMARE', 24, false);
+        difficultyText.animation.addByPrefix('mercy', 'MERCY', 24, false);
+        difficultyText.animation.play('normal');
         add(difficultyText);
 
         curDifficulty = CoolUtil.difficulties.indexOf(CoolUtil.defaultDifficulty);
@@ -200,29 +204,7 @@ class FreeplayStateNew extends MusicBeatState
 
         PlayState.storyDifficulty = curDifficulty;
 
-        difficultyText.text = CoolUtil.difficulties[curDifficulty].toUpperCase();
-
-        switch (CoolUtil.difficulties[curDifficulty].toUpperCase())
-        {
-            case "EASY":
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[0], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-            case "NORMAL":
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[1], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-            case "HARD":
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[2], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-            case "ERECT":
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[3], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-            case "NIGHTMARE":
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, diffColor[4], CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-            default:
-                difficultyText.setFormat(Paths.font("pah.ttf"), 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                difficultyText.x = diffTextPlus;
-        }
+        difficultyText.animation.play(CoolUtil.difficulties[curDifficulty].toLowerCase());
     }
 
     function updateList()
