@@ -366,6 +366,7 @@ class PlayState extends MusicBeatState
 
 	public var luaArray:Array<FunkinLua> = [];
 	public var hscriptArray:Array<FunkinHScript> = [];
+	public var hxcArray:Array<FunkinHXC> = [];
 
 	private var luaDebugGroup:FlxTypedGroup<DebugLuaText>;
 
@@ -1000,6 +1001,11 @@ class PlayState extends MusicBeatState
 						hscriptArray.push(new FunkinHScript(folder + file));
 						filesPushed.push(file);
 					}
+					if (file.endsWith('.hxc') && !filesPushed.contains(file))
+					{
+						hxcArray.push(new FunkinHXC(folder + file));
+						filesPushed.push(file);
+					}
 				}
 			}
 		}
@@ -1009,6 +1015,7 @@ class PlayState extends MusicBeatState
 		#if (MODS_ALLOWED && LUA_ALLOWED)
 		runLua('stages/' + curStage);
 		runHX('stages/' + curStage);
+		runHXC('stages/' + curStage);
 		#end
 
 		var gfVersion:String = SONG.gfVersion;
@@ -1351,11 +1358,13 @@ class PlayState extends MusicBeatState
 		{
 			runLua('custom_notetypes/' + notetype);
 			runHX('custom_notetypes/' + notetype);
+			runHXC('custom_notetypes/' + notetype);
 		}
 		for (event in eventPushedMap.keys())
 		{
 			runLua('custom_events/' + event);
 			runHX('custom_events/' + event);
+			runHXC('custom_events/' + event);
 		}
 		#end
 		noteTypeMap.clear();
@@ -1393,6 +1402,11 @@ class PlayState extends MusicBeatState
 					if (file.endsWith('.hxs') && !filesPushed.contains(file))
 					{
 						hscriptArray.push(new FunkinHScript(folder + file));
+						filesPushed.push(file);
+					}
+					if (file.endsWith('.hxc') && !filesPushed.contains(file))
+					{
+						hxcArray.push(new FunkinHXC(folder + file));
 						filesPushed.push(file);
 					}
 				}
@@ -1577,6 +1591,30 @@ class PlayState extends MusicBeatState
 		if (doPush)
 		{
 			hscriptArray.push(new FunkinHScript(luaFile));
+		}
+	}
+
+	public function runHXC(file:String)
+	{
+		var doPush:Bool = false;
+		var luaFile:String = file + '.hxc';
+		if (FileSystem.exists(Paths.modFolders(luaFile)))
+		{
+			luaFile = Paths.modFolders(luaFile);
+			doPush = true;
+		}
+		else
+		{
+			luaFile = Paths.getPreloadPath(luaFile);
+			if (FileSystem.exists(luaFile))
+			{
+				doPush = true;
+			}
+		}
+
+		if (doPush)
+		{
+			hxcArray.push(new FunkinHXC(luaFile));
 		}
 	}
 
@@ -1768,6 +1806,7 @@ class PlayState extends MusicBeatState
 	{
 		runLua('characters/' + name);
 		runHX('characters/' + name);
+		runHXC('characters/' + name);
 	}
 
 	public function getLuaObject(tag:String, text:Bool = true):FlxSprite
@@ -5642,6 +5681,10 @@ class PlayState extends MusicBeatState
 		{
 			hscript.call(event, args);
 		}
+		for (hscript in hxcArray)
+		{
+			hscript.script.call(event, args);
+		}
 		var returnVal:Dynamic = FunkinLua.Function_Continue;
 		#if LUA_ALLOWED
 		if (exclusions == null)
@@ -5669,6 +5712,14 @@ class PlayState extends MusicBeatState
 
 	public function setOnLuas(variable:String, arg:Dynamic)
 	{
+		for (i in hscriptArray)
+		{
+			i.set(variable, arg);
+		}
+		for (i in hxcArray)
+		{
+			i.set(variable, arg);
+		}
 		#if LUA_ALLOWED
 		for (i in 0...luaArray.length)
 		{
