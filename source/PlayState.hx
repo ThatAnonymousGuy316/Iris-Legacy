@@ -1354,8 +1354,8 @@ class PlayState extends MusicBeatState
 		}
 		for (event in eventPushedMap.keys())
 		{
-			runLua('custom_events/' + notetype);
-			runHX('custom_events/' + notetype);
+			runLua('custom_events/' + event);
+			runHX('custom_events/' + event);
 		}
 		#end
 		noteTypeMap.clear();
@@ -1552,11 +1552,6 @@ class PlayState extends MusicBeatState
 
 		if (doPush)
 		{
-			for (script in luaArray)
-			{
-				if (script.scriptName == luaFile)
-					return;
-			}
 			luaArray.push(new FunkinLua(luaFile));
 		}
 	}
@@ -1581,11 +1576,6 @@ class PlayState extends MusicBeatState
 
 		if (doPush)
 		{
-			for (script in hscriptArray)
-			{
-				if (script.scriptName == luaFile)
-					return;
-			}
 			hscriptArray.push(new FunkinHScript(luaFile));
 		}
 	}
