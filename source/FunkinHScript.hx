@@ -111,7 +111,7 @@ class FunkinHScript
     {
         set('GrayscaleShader', GrayscaleShader);
         set('CRTShader', CRTShader);
-        set('BouncyShader', BouncyShader);
+        
         set('TJSON', tjson.TJSON);
 		set('setVar', function(name:String, value:Dynamic)
 		{
