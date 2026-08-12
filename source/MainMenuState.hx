@@ -43,7 +43,7 @@ typedef OptionDataJson = {
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = ''; //This is also used for Discord RPC
-	public static var irisLegacyVersion:String = '0.1.2';
+	public static var irisLegacyVersion:String = '0.2.1';
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -213,19 +213,10 @@ class MainMenuState extends MusicBeatState
 								switch (daChoice)
 								{
 									default:
-										var scriptLUA:FunkinLua = new FunkinLua(runLua('menuButtons/${daChoice}'));
-										var scriptHX:FunkinHScript = new FunkinHScript(runHX('menuButtons/${daChoice}'));
-									case 'story_mode':
-										MusicBeatState.switchState(new StoryMenuState());
-									case 'freeplay':
-										if (FlxG.keys.pressed.CONTROL)
-											MusicBeatState.switchState(new FreeplayState());
-										else
-											MusicBeatState.switchState(new FreeplayStateNew());
-									case 'credits':
-										MusicBeatState.switchState(new CreditsState());
-									case 'options':
-										LoadingState.loadAndSwitchState(new options.OptionsState());
+										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.lua')))
+											var scriptLUA:FunkinLua = new FunkinLua(Paths.modFolders('menuButtons/${daChoice}.lua'));
+										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.hxs')))
+											var scriptHX:FunkinHScript = new FunkinHScript(Paths.modFolders('menuButtons/${daChoice}.hxs'));
 								}
 							});
 						}
@@ -242,58 +233,6 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
-	}
-
-	public function runLua(file:String)
-	{
-		var doPush:Bool = false;
-		var luaFile:String = file + '.lua';
-		if (FileSystem.exists(Paths.modFolders(luaFile)))
-		{
-			luaFile = Paths.modFolders(luaFile);
-			doPush = true;
-		}
-		else
-		{
-			luaFile = Paths.getPreloadPath(luaFile);
-			if (FileSystem.exists(luaFile))
-			{
-				doPush = true;
-			}
-		}
-
-		if (doPush)
-		{
-			return luaFile;
-		}
-
-		return null;
-	}
-
-	public function runHX(file:String)
-	{
-		var doPush:Bool = false;
-		var luaFile:String = file + '.hxs';
-		if (FileSystem.exists(Paths.modFolders(luaFile)))
-		{
-			luaFile = Paths.modFolders(luaFile);
-			doPush = true;
-		}
-		else
-		{
-			luaFile = Paths.getPreloadPath(luaFile);
-			if (FileSystem.exists(luaFile))
-			{
-				doPush = true;
-			}
-		}
-
-		if (doPush)
-		{
-			return luaFile;
-		}
-
-		return null;
 	}
 
 	function changeItem(huh:Int = 0)
