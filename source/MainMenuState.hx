@@ -213,7 +213,7 @@ class MainMenuState extends MusicBeatState
 								switch (daChoice)
 								{
 									default:
-										var scriptLUA:FunkinLua
+										var scriptLUA:FunkinLua;
 										var scriptHX:FunkinHScript;
 										runLua('menuButtons/${daChoice}', scriptLUA);
 										runHX('menuButtons/${daChoice}', scriptHX);
