@@ -76,19 +76,22 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		#end
 
 		var charArray = ['default', 'minus', 'minus 2', 'minus 3', 'pico', 'vee'];
-		var skinArray:SkinArrayJson;
-		skinArray = Json.parse('assets/data/Skins.json');
-		var skinArrayMods:SkinArrayJson;
-		skinArrayMods = Json.parse(Paths.modsJson('Skins'));
+		var skinArray:SkinArrayJson = Json.parse(sys.io.File.getContent('assets/data/Skins.json'));
+		var skinArrayMods:SkinArrayJson = null;
+		if (sys.FileSystem.exists(Paths.modsJson('Skins')))
+			skinArrayMods = Json.parse(Paths.modsJson('Skins'));
 
 		for (skin in skinArray.skins)
 		{
 			charArray.push(skin.name);
 		}
 
-		for (skinMod in skinArrayMods.skins)
+		if (skinArrayMods != null)
 		{
-			charArray.push(skinMod.name);
+			for (skinMod in skinArrayMods.skins)
+			{
+				charArray.push(skinMod.name);
+			}
 		}
 
 		var option:Option = new Option('Player Skin:',

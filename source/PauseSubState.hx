@@ -19,7 +19,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Close Game', 'Exit to menu'];
+	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Close Game', 'Options', 'Exit to menu'];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -216,6 +216,8 @@ class PauseSubState extends MusicBeatSubstate
 
 			switch (daSelected)
 			{
+				case 'Options':
+					LoadingState.loadAndSwitchState(new options.OptionsState(true));
 				case 'Close Game':
 					Sys.exit(0);
 				case "Resume":
