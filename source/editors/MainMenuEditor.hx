@@ -1,4 +1,4 @@
-package editors;
+package substates;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -60,6 +60,7 @@ class MainMenuEditor extends MusicBeatState
 	var addObject:FlxButton;
 	var objectText:FlxUIInputText;
     var objectTextA:FlxText;
+	var editorPanelBG:FlxSprite;
 
 	var objectCheckState:FlxUICheckBox;
 
@@ -70,6 +71,12 @@ class MainMenuEditor extends MusicBeatState
 		super.create();
 
 		FlxG.mouse.visible = true;
+
+		// Add a semi-transparent black box behind the editor UI controls
+		var editorPanelBG:FlxSprite = new FlxSprite(10, 10).makeGraphic(540, 250, FlxColor.BLACK);
+		editorPanelBG.alpha = 0.65;
+		editorPanelBG.scrollFactor.set();
+		add(editorPanelBG);
 
 		menuJson = Json.parse(Paths.getTextFromFile('states/_override/MainMenuState.json'));
 
@@ -87,8 +94,15 @@ class MainMenuEditor extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 
+		// Initialize the class variable here
+		editorPanelBG = new FlxSprite(10, 10).makeGraphic(530, 250, FlxColor.BLACK);
+		editorPanelBG.alpha = 0.5; // Slight tint transparency
+		editorPanelBG.scrollFactor.set();
+		add(editorPanelBG);
+
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
+        
 
 		for (i in 0...optionShit.length)
 		{
@@ -373,25 +387,42 @@ class MainMenuEditor extends MusicBeatState
 			MusicBeatState.switchState(new editors.MasterEditorMenu());
 		}
 
-        if (FlxG.keys.justPressed.F1)
-        {
-            imageBackgroundInput.visible = !imageBackgroundInput.visible;
-            reloadImage.visible = !reloadImage.visible;
-            allowBackgroundMove.visible = !allowBackgroundMove.visible;
-            allowMenuItemMove.visible = !allowMenuItemMove.visible;
-            backgroundText.visible = !backgroundText.visible;
+		// --- F1: OPEN HELP MENU ---
+		if (FlxG.keys.justPressed.F1)
+		{
+			// Set the static text for the Main Menu Editor
+			substates.HELPSubState.helpText = 
+				"MAIN MENU EDITOR\n\n" +
+				"- Press F2 to hide the UI.\n" +
+				"- Click 'BG Move' to drag the background.\n" +
+				"- Click 'Item Move' to drag menu items.\n" +
+				"- Right-Click an item to delete it.\n" +
+				"- Don't forget to Save!";
+			
+			openSubState(new substates.HELPSubState());
+		}
+
+		// --- F2: HIDE/SHOW UI ---
+		if (FlxG.keys.justPressed.F2)
+		{
+			editorPanelBG.visible = !editorPanelBG.visible;
+			imageBackgroundInput.visible = !imageBackgroundInput.visible;
+			reloadImage.visible = !reloadImage.visible;
+			allowBackgroundMove.visible = !allowBackgroundMove.visible;
+			allowMenuItemMove.visible = !allowMenuItemMove.visible;
+			backgroundText.visible = !backgroundText.visible;
 			imageBackgroundInputFlash.visible = !imageBackgroundInputFlash.visible;
-            reloadImageFlash.visible = !reloadImageFlash.visible;
-            backgroundTextFlash.visible = !backgroundTextFlash.visible;
-            saveButton.visible = !saveButton.visible;
+			reloadImageFlash.visible = !reloadImageFlash.visible;
+			backgroundTextFlash.visible = !backgroundTextFlash.visible;
+			saveButton.visible = !saveButton.visible;
 			changeVersion.visible = !changeVersion.visible;
-            versionText.visible = !versionText.visible;
-            versionTextA.visible = !versionTextA.visible;
+			versionText.visible = !versionText.visible;
+			versionTextA.visible = !versionTextA.visible;
 			addObject.visible = !addObject.visible;
-            objectText.visible = !objectText.visible;
-            objectTextA.visible = !objectTextA.visible;
+			objectText.visible = !objectText.visible;
+			objectTextA.visible = !objectTextA.visible;
 			objectCheckState.visible = !objectCheckState.visible;
-        }
+		}
 	}
 
 	function handleMenuItemRemoval()

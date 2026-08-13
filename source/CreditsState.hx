@@ -78,6 +78,13 @@ class CreditsState extends MusicBeatState
 		#end
 
 		final defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
+			['Iris Legacy Team'],
+			['Iris',                'iris',             'Director',                                						'https://www.youtube.com/@QueenHenrietta-g5o', '7f61bc'],
+			['Osohatescash',        'oso',             'Co-Director Of Iris Legacy Team',         						'https://www.youtube.com/@bumassosolol',  '1f1105'],
+			['Big Boi',             'face',             'Freeplay Artworks ',                      						'https://www.youtube.com/watch?v=s2699HTY-g8'],
+			['vees boyf',           'boyf',             'Playtester and Made the engine big',      						'https://www.youtube.com/@B0YFR1END',     'ff0004'],
+			['vee',                 'vee',             'uhhh',                                    						'https://www.roblox.com/games/16116270224/Dandys-World','99cf91'],
+
 			['Psych Engine Team'],
 			['Shadow Mario',		'shadowmario',		'Main Programmer of Psych Engine',								 'https://ko-fi.com/shadowmario',		 '444444'],
 			['Riveren',				'riveren',			'Main Artist/Animator of Psych Engine',							 'https://twitter.com/riverennn',		 '14967B'],
