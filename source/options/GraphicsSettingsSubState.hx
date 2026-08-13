@@ -30,14 +30,10 @@ using StringTools;
 
 class GraphicsSettingsSubState extends BaseOptionsMenu
 {
-	var skinArray:SkinArrayJson;
-
 	public function new()
 	{
 		title = 'Graphics';
 		rpcTitle = 'Graphics Settings Menu'; //for Discord Rich Presence
-
-		skinArray = Json.parse(Paths.getTextFromFile('data/Skins.json'));
 
 		//I'd suggest using "Low Quality" as an example for making your own option since it is the simplest here
 		var option:Option = new Option('Low Quality', //Name
@@ -80,10 +76,19 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		#end
 
 		var charArray = ['default', 'minus', 'minus 2', 'minus 3', 'pico', 'vee'];
+		var skinArray:SkinArrayJson;
+		skinArray = Json.parse('assets/data/Skins.json');
+		var skinArrayMods:SkinArrayJson;
+		skinArrayMods = Json.parse(Paths.modsJson('Skins'));
 
 		for (skin in skinArray.skins)
 		{
 			charArray.push(skin.name);
+		}
+
+		for (skinMod in skinArrayMods.skins)
+		{
+			charArray.push(skinMod.name);
 		}
 
 		var option:Option = new Option('Player Skin:',

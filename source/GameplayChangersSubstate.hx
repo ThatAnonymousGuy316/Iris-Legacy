@@ -42,18 +42,18 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Scroll Speed', 'scrollspeed', 'float', 1);
 		option.scrollSpeed = 2.0;
-		option.minValue = 0.35;
+		option.minValue = 0.05;
 		option.changeValue = 0.05;
 		option.decimals = 2;
 		if (goption.getValue() != "constant")
 		{
 			option.displayFormat = '%vX';
-			option.maxValue = 3;
+			option.maxValue = 1000000000;
 		}
 		else
 		{
 			option.displayFormat = "%v";
-			option.maxValue = 6;
+			option.maxValue = 1000000000;
 		}
 		optionsArray.push(option);
 
@@ -253,13 +253,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 											if (curOption.getValue() == "constant")
 											{
 												oOption.displayFormat = "%v";
-												oOption.maxValue = 6;
+												oOption.maxValue = 1000000000;
 											}
 											else
 											{
 												oOption.displayFormat = "%vX";
-												oOption.maxValue = 3;
-												if(oOption.getValue() > 3) oOption.setValue(3);
+												oOption.maxValue = 1000000000;
+												if(oOption.getValue() > 1000000000) oOption.setValue(1000000000);
 											}
 											updateTextFrom(oOption);
 										}
@@ -312,10 +312,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 					if(leOption.name == 'Scroll Speed')
 					{
 						leOption.displayFormat = "%vX";
-						leOption.maxValue = 3;
-						if(leOption.getValue() > 3)
+						leOption.maxValue = 1000000000;
+						if(leOption.getValue() > 1000000000)
 						{
-							leOption.setValue(3);
+							leOption.setValue(1000000000);
 						}
 						updateTextFrom(leOption);
 					}
