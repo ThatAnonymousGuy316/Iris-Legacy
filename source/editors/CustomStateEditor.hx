@@ -47,6 +47,10 @@ class CustomStateEditor extends MusicBeatState
     public var optionShit:Array<String> = [];
 
     public var stateObjects:FlxTypedGroup<FlxBasic>;
+    public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
+
+    var addObjectButton:FlxButton;
+    var addObjectInputText:FlxUIInputText;
 
     var bg:FlxSprite;
 
@@ -101,7 +105,27 @@ class CustomStateEditor extends MusicBeatState
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 
             stateObjects.add(sprite);
+            stateVariables.set(object.name, sprite);
         }
+
+        addObjectInputText = new FlxUIInputText(
+			15,
+			30,
+			200,
+			"",
+			8
+		);
+
+		addObjectButton = new FlxButton(
+			addObjectInputText.x + 210,
+			addObjectInputText.y - 3,
+			"Add Object",
+			function()
+			{
+				bg.loadGraphic(Paths.image(imageBackgroundInput.text));
+				bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+			}
+		);
     }
 
     override function update(elapsed:Float)
@@ -114,6 +138,31 @@ class CustomStateEditor extends MusicBeatState
 		}
     }
 
+    public function createObject(name:String, texture:String, x:Float, y:Float, ?alpha:Float = 1, ?hasFrames:Bool = false, ?animationPrefix:String, ?animationFramerate:Int, ?animationLoops:Bool)
+    {
+        var sprite:FlxSprite = new FlxSprite(x, y);
+
+        if (hasFrames)
+        {
+            sprite.frames = Paths.getSparrowAtlas(texture);
+            sprite.animation.addByPrefix(
+                animationPrefix,
+                animationPrefix,
+                animationFramerate,
+                animationLoops
+            );
+            sprite.animation.play(animationPrefix);
+        }
+        else
+            sprite.loadGraphic(texture);
+
+        sprite.alpha = alpha;
+        sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
+
+        stateObjects.add(sprite);
+        stateVariables.set(name, sprite);
+    }
+    
     public function saveJson(stateName:String)
     {
         var saveFolder:String = Sys.getCwd() + "/game/states";
@@ -163,6 +212,7 @@ class CustomStateEditor extends MusicBeatState
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 
             stateObjects.add(sprite);
+            stateVariables.set(object.name, sprite);
         }
     }
 }

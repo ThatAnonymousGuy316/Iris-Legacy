@@ -11,6 +11,7 @@ typedef NoteSplashMeta = {
 	var offsetY:Float;
 	var frameRate:Int;
 	var alpha:Float;
+	var colors:Bool;
 }
 
 class NoteSplash extends FlxSprite
@@ -61,9 +62,18 @@ class NoteSplash extends FlxSprite
 		if(textureLoaded != texture) {
 			loadAnims(texture);
 		}
-		colorSwap.hue = hueColor;
-		colorSwap.saturation = satColor;
-		colorSwap.brightness = brtColor;
+		if (splashJson.colors)
+		{
+			colorSwap.hue = hueColor;
+			colorSwap.saturation = satColor;
+			colorSwap.brightness = brtColor;
+		}
+		else
+		{
+			colorSwap.hue = 0;
+			colorSwap.saturation = 0;
+			colorSwap.brightness = 0;			
+		}
 		offset.set(splashJson.offsetX, splashJson.offsetY);
 
 		var animNum:Int = FlxG.random.int(1, 2);

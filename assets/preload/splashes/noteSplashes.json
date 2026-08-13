@@ -2,5 +2,6 @@
     "offsetX": -25,
     "offsetY": -25,
     "frameRate": 26,
-    "alpha": 1
+    "alpha": 1,
+    "colors": true
 }
