@@ -20,6 +20,14 @@ import sys.FileSystem;
 
 import MainMenuState;
 
+typedef MenuEditAction = {
+	var index:Int;
+	var name:String;
+	var x:Float;
+	var y:Float;
+	var goesToState:Bool;
+}
+
 class MainMenuEditor extends MusicBeatState
 {
 	var bg:FlxSprite;
@@ -44,6 +52,9 @@ class MainMenuEditor extends MusicBeatState
 	var itemDragOffsetX:Float = 0;
 	var itemDragOffsetY:Float = 0;
 
+	var undoStack:Array<MenuEditAction> = [];
+	var redoStack:Array<MenuEditAction> = [];
+
     var allowMenuItemMove:FlxButton;
     var allowBackgroundMove:FlxButton;
     var reloadImage:FlxButton;
@@ -53,6 +64,8 @@ class MainMenuEditor extends MusicBeatState
     var backgroundTextFlash:FlxText;
 
 	var saveButton:FlxButton;
+	var undoButton:FlxButton;
+	var redoButton:FlxButton;
 
 	var changeVersion:FlxButton;
 	var versionText:FlxUIInputText;
@@ -92,22 +105,23 @@ class MainMenuEditor extends MusicBeatState
 		add(bg);
 
 		var yScroll:Float = 0.25;
-		editorBG = new FlxSprite(-150, -150).makeGraphic(FlxG.width + 300, FlxG.height + 300, 0x00808080);
+		editorBG = new FlxSprite(-150, -150).makeGraphic(FlxG.width + 300, FlxG.height + 300, 0xFF808080);
 		editorBG.scrollFactor.set(0, yScroll);
 		editorBG.visible = false;
 		add(editorBG);
 
 		var tileSize:Int = 80;
-		var tempSprite:FlxSprite = new FlxSprite().makeGraphic(tileSize * 2, tileSize * 2, FlxColor.WHITE);
+		var tempSprite:FlxSprite = new FlxSprite().makeGraphic(tileSize * 2, tileSize * 2, FlxColor.TRANSPARENT);
 		tempSprite.pixels.fillRect(new openfl.geom.Rectangle(0, 0, tileSize, tileSize), FlxColor.WHITE);
 		tempSprite.pixels.fillRect(new openfl.geom.Rectangle(tileSize, tileSize, tileSize, tileSize), FlxColor.WHITE);
 
 		checkeredBg = new FlxBackdrop(tempSprite.graphic, XY, 0, 0);
 		checkeredBg.scrollFactor.set(0, yScroll);
-		checkeredBg.velocity.set(45, 45); 
+		checkeredBg.velocity.set(45, 45);
 		checkeredBg.alpha = FlxG.random.float(0.06, 0.12);
+		checkeredBg.visible = false;
 		add(checkeredBg);
-		
+
 		editorPanelBG = new FlxSprite(10, 10).makeGraphic(530, 250, FlxColor.BLACK);
 		editorPanelBG.alpha = 0.5;
 		editorPanelBG.scrollFactor.set();
@@ -116,42 +130,7 @@ class MainMenuEditor extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
         
-		for (i in 0...optionShit.length)
-		{
-			var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
-
-			var menuItem = new FlxSprite(
-				menuJson.options[i].x,
-				menuJson.options[i].y
-			);
-
-			menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
-			menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
-
-			menuItem.animation.addByPrefix(
-				'idle',
-				optionShit[i] + " basic",
-				24
-			);
-
-			menuItem.animation.addByPrefix(
-				'selected',
-				optionShit[i] + " white",
-				24
-			);
-
-			menuItem.animation.play('idle');
-
-			var scroll:Float = (optionShit.length - 4) * 0.135;
-
-			if (optionShit.length < 6)
-				scroll = 0;
-
-			menuItem.scrollFactor.set(0, scroll);
-			menuItem.updateHitbox();
-
-			menuItems.add(menuItem);
-		}
+		rebuildMenuItems();
 
 		imageBackgroundInput = new FlxUIInputText(
 			15,
@@ -231,6 +210,26 @@ class MainMenuEditor extends MusicBeatState
 			}
 		);
 
+		undoButton = new FlxButton(
+			imageBackgroundInput.x + 400,
+			imageBackgroundInput.y + 50,
+			"Undo",
+			function()
+			{
+				undoAction();
+			}
+		);
+
+		redoButton = new FlxButton(
+			imageBackgroundInput.x + 400,
+			imageBackgroundInput.y + 75,
+			"Redo",
+			function()
+			{
+				redoAction();
+			}
+		);
+
 		versionText = new FlxUIInputText(
 			15,
 			130,
@@ -278,40 +277,9 @@ class MainMenuEditor extends MusicBeatState
 					y: 0,
 				};
 				optionShit.push(newObject.name);
-
-				var menuItem = new FlxSprite(
-					newObject.x,
-					newObject.y
-				);
-
-				menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
-				menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + newObject.name);
-
-				menuItem.animation.addByPrefix(
-					'idle',
-					newObject.name + " basic",
-					24
-				);
-
-				menuItem.animation.addByPrefix(
-					'selected',
-					newObject.name + " white",
-					24
-				);
-
-				menuItem.animation.play('idle');
-
-				var scroll:Float = (optionShit.length - 4) * 0.135;
-
-				if (optionShit.length < 6)
-					scroll = 0;
-
-				menuItem.scrollFactor.set(0, scroll);
-				menuItem.updateHitbox();
-
-				menuItems.add(menuItem);
-
 				menuJson.options.push(newObject);
+
+				rebuildMenuItems();
 			}
 		);
 
@@ -323,6 +291,8 @@ class MainMenuEditor extends MusicBeatState
 		add(imageBackgroundInputFlash);
 		add(reloadImageFlash);
 		add(saveButton);
+		add(undoButton);
+		add(redoButton);
 
 		add(versionText);
 		add(changeVersion);
@@ -364,6 +334,45 @@ class MainMenuEditor extends MusicBeatState
 		add(objectTextA);
 	}
 
+	function rebuildMenuItems()
+	{
+		menuItems.clear();
+		for (i in 0...optionShit.length)
+		{
+			var menuItem = new FlxSprite(
+				menuJson.options[i].x,
+				menuJson.options[i].y
+			);
+
+			menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
+			menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
+
+			menuItem.animation.addByPrefix(
+				'idle',
+				optionShit[i] + " basic",
+				24
+			);
+
+			menuItem.animation.addByPrefix(
+				'selected',
+				optionShit[i] + " white",
+				24
+			);
+
+			menuItem.animation.play('idle');
+
+			var scroll:Float = (optionShit.length - 4) * 0.135;
+
+			if (optionShit.length < 6)
+				scroll = 0;
+
+			menuItem.scrollFactor.set(0, scroll);
+			menuItem.updateHitbox();
+
+			menuItems.add(menuItem);
+		}
+	}
+
     public function saveJson()
     {
         var saveFolder:String = Sys.getCwd() + "/game/states/_override";
@@ -386,6 +395,7 @@ class MainMenuEditor extends MusicBeatState
 		handleBackgroundDragging();
 		handleMenuItemDragging();
 		handleMenuItemRemoval();
+		handleUndoRedoShortcuts();
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
@@ -401,6 +411,8 @@ class MainMenuEditor extends MusicBeatState
 				"- Click 'BG Move' to drag the background.\n" +
 				"- Click 'Item Move' to drag menu items.\n" +
 				"- Right-Click an item to delete it.\n" +
+				"- Ctrl+Z / Undo button to Undo deletion.\n" +
+				"- Ctrl+Y / Redo button to Redo deletion.\n" +
 				"- Don't forget to Save!";
 			
 			editorBG.visible = true;
@@ -422,6 +434,8 @@ class MainMenuEditor extends MusicBeatState
 			reloadImageFlash.visible = panelVisible;
 			backgroundTextFlash.visible = panelVisible;
 			saveButton.visible = panelVisible;
+			undoButton.visible = panelVisible;
+			redoButton.visible = panelVisible;
 			changeVersion.visible = panelVisible;
 			versionText.visible = panelVisible;
 			versionTextA.visible = panelVisible;
@@ -449,6 +463,17 @@ class MainMenuEditor extends MusicBeatState
 
 				if (item != null && FlxG.mouse.overlaps(item))
 				{
+					var opt = menuJson.options[i];
+					var action:MenuEditAction = {
+						index: i,
+						name: opt.name,
+						x: opt.x,
+						y: opt.y,
+						goesToState: opt.goesToState
+					};
+					undoStack.push(action);
+					redoStack = []; // Clear redo history on new deletion action
+
 					menuItems.remove(item, true);
 					menuJson.options.splice(i, 1);
 					optionShit.splice(i, 1);
@@ -459,9 +484,85 @@ class MainMenuEditor extends MusicBeatState
 						draggedItem = null;
 					}
 
+					rebuildMenuItems();
 					break;
 				}
 			}
+		}
+	}
+
+	function undoAction()
+	{
+		if (undoStack.length > 0)
+		{
+			var action = undoStack.pop();
+			redoStack.push(action);
+
+			var optData = {
+				name: action.name,
+				x: action.x,
+				y: action.y,
+				goesToState: action.goesToState
+			};
+
+			if (action.index <= menuJson.options.length)
+			{
+				menuJson.options.insert(action.index, optData);
+				optionShit.insert(action.index, action.name);
+			}
+			else
+			{
+				menuJson.options.push(optData);
+				optionShit.push(action.name);
+			}
+
+			rebuildMenuItems();
+		}
+	}
+
+	function redoAction()
+	{
+		if (redoStack.length > 0)
+		{
+			var action = redoStack.pop();
+			undoStack.push(action);
+
+			if (action.index < menuJson.options.length && menuJson.options[action.index].name == action.name)
+			{
+				menuJson.options.splice(action.index, 1);
+				optionShit.splice(action.index, 1);
+			}
+			else
+			{
+				for (i in 0...menuJson.options.length)
+				{
+					if (menuJson.options[i].name == action.name)
+					{
+						menuJson.options.splice(i, 1);
+						optionShit.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+			rebuildMenuItems();
+		}
+	}
+
+	function handleUndoRedoShortcuts()
+	{
+		var controlPressed:Bool = FlxG.keys.pressed.CONTROL;
+
+		// Undo: Ctrl + Z
+		if (controlPressed && FlxG.keys.justPressed.Z)
+		{
+			undoAction();
+		}
+
+		// Redo: Ctrl + Y
+		if (controlPressed && FlxG.keys.justPressed.Y)
+		{
+			redoAction();
 		}
 	}
 
