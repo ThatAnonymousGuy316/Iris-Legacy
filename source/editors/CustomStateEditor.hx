@@ -125,8 +125,6 @@ class CustomStateEditor extends MusicBeatState
 			"Add Object",
 			function()
 			{
-				bg.loadGraphic(Paths.image(imageBackgroundInput.text));
-				bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 			}
 		);
     }
