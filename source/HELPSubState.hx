@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class HELPSubState extends MusicBeatSubstate
+class HelpSubState extends MusicBeatSubstate
 {
 	// The static variable that other editors will overwrite
 	public static var helpText:String = "Default Help Text";

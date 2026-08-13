@@ -10,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.addons.ui.FlxUICheckBox;
 import haxe.Json;
+import flixel.addons.display.FlxBackdrop;
 
 using StringTools;
 
@@ -62,8 +63,10 @@ class MainMenuEditor extends MusicBeatState
     var objectTextA:FlxText;
 	var editorPanelBG:FlxSprite;
 
-	var objectCheckState:FlxUICheckBox;
+	var checkeredBg:FlxBackdrop;
+	var editorBG:FlxSprite;
 
+	var objectCheckState:FlxUICheckBox;
 	public var doesObjectGoToState:Bool = true;
 
 	override public function create()
@@ -71,12 +74,6 @@ class MainMenuEditor extends MusicBeatState
 		super.create();
 
 		FlxG.mouse.visible = true;
-
-		// Add a semi-transparent black box behind the editor UI controls
-		editorPanelBG = new FlxSprite(10, 10).makeGraphic(540, 250, FlxColor.BLACK);
-		editorPanelBG.alpha = 0.65;
-		editorPanelBG.scrollFactor.set();
-		add(editorPanelBG);
 
 		menuJson = Json.parse(Paths.getTextFromFile('states/_override/MainMenuState.json'));
 
@@ -94,16 +91,31 @@ class MainMenuEditor extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 
-		// Initialize the class variable here
+		var yScroll:Float = 0.25;
+		editorBG = new FlxSprite(-150, -150).makeGraphic(FlxG.width + 300, FlxG.height + 300, 0x00808080);
+		editorBG.scrollFactor.set(0, yScroll);
+		editorBG.visible = false;
+		add(editorBG);
+
+		var tileSize:Int = 80;
+		var tempSprite:FlxSprite = new FlxSprite().makeGraphic(tileSize * 2, tileSize * 2, FlxColor.WHITE);
+		tempSprite.pixels.fillRect(new openfl.geom.Rectangle(0, 0, tileSize, tileSize), FlxColor.WHITE);
+		tempSprite.pixels.fillRect(new openfl.geom.Rectangle(tileSize, tileSize, tileSize, tileSize), FlxColor.WHITE);
+
+		checkeredBg = new FlxBackdrop(tempSprite.graphic, XY, 0, 0);
+		checkeredBg.scrollFactor.set(0, yScroll);
+		checkeredBg.velocity.set(45, 45); 
+		checkeredBg.alpha = FlxG.random.float(0.06, 0.12);
+		add(checkeredBg);
+		
 		editorPanelBG = new FlxSprite(10, 10).makeGraphic(530, 250, FlxColor.BLACK);
-		editorPanelBG.alpha = 0.5; // Slight tint transparency
+		editorPanelBG.alpha = 0.5;
 		editorPanelBG.scrollFactor.set();
 		add(editorPanelBG);
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
         
-
 		for (i in 0...optionShit.length)
 		{
 			var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
@@ -247,11 +259,10 @@ class MainMenuEditor extends MusicBeatState
 
 		objectCheckState = new FlxUICheckBox(10, objectText.y + 50, null, null, "Object Goes To A State?", 100);
 		objectCheckState.checked = doesObjectGoToState;
-		// _song.needsVoices = check_voices.checked;
+
 		objectCheckState.callback = function()
 		{
 			doesObjectGoToState = objectCheckState.checked;
-			//trace('CHECKED!');
 		};
 
 		addObject = new FlxButton(
@@ -267,7 +278,6 @@ class MainMenuEditor extends MusicBeatState
 					y: 0,
 				};
 				optionShit.push(newObject.name);
-				var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
 
 				var menuItem = new FlxSprite(
 					newObject.x,
@@ -321,14 +331,13 @@ class MainMenuEditor extends MusicBeatState
 		add(addObject);
 		add(objectCheckState);
 
-        backgroundText = new FlxText(
+		backgroundText = new FlxText(
             15,
             imageBackgroundInput.y - 18,
             0,
             'Background image file name:'
         );
-
-        add(backgroundText);
+		add(backgroundText);
 
 		backgroundTextFlash = new FlxText(
             15,
@@ -336,7 +345,6 @@ class MainMenuEditor extends MusicBeatState
             0,
             'Background Flash image file name:'
         );
-
 		add(backgroundTextFlash);
 
 		versionTextA = new FlxText(
@@ -345,7 +353,6 @@ class MainMenuEditor extends MusicBeatState
             0,
             'Version:'
         );
-
 		add(versionTextA);
 
 		objectTextA = new FlxText(
@@ -354,9 +361,7 @@ class MainMenuEditor extends MusicBeatState
             0,
             'Object Name:'
         );
-
 		add(objectTextA);
-
 	}
 
     public function saveJson()
@@ -370,6 +375,7 @@ class MainMenuEditor extends MusicBeatState
             saveFolder + "/MainMenuState.json",
             Json.stringify(menuJson, null, "\t")
         );
+
         trace("Saved JSON files to: " + saveFolder);
     }
 
@@ -387,42 +393,50 @@ class MainMenuEditor extends MusicBeatState
 			MusicBeatState.switchState(new editors.MasterEditorMenu());
 		}
 
-		// --- F1: OPEN HELP MENU ---
-		if (FlxG.keys.justPressed.F1)
+		if (FlxG.keys.justPressed.F2)
 		{
-			// Set the static text for the Main Menu Editor
 			substates.HELPSubState.helpText = 
 				"MAIN MENU EDITOR\n\n" +
-				"- Press F2 to hide the UI.\n" +
+				"- Press ESCAPE to hide the UI.\n" +
 				"- Click 'BG Move' to drag the background.\n" +
 				"- Click 'Item Move' to drag menu items.\n" +
 				"- Right-Click an item to delete it.\n" +
 				"- Don't forget to Save!";
 			
+			editorBG.visible = true;
+			checkeredBg.visible = true;
 			openSubState(new substates.HELPSubState());
 		}
-
-		// --- F2: HIDE/SHOW UI ---
-		if (FlxG.keys.justPressed.F2)
+		
+		if (FlxG.keys.justPressed.F1)
 		{
-			editorPanelBG.visible = !editorPanelBG.visible;
-			imageBackgroundInput.visible = !imageBackgroundInput.visible;
-			reloadImage.visible = !reloadImage.visible;
-			allowBackgroundMove.visible = !allowBackgroundMove.visible;
-			allowMenuItemMove.visible = !allowMenuItemMove.visible;
-			backgroundText.visible = !backgroundText.visible;
-			imageBackgroundInputFlash.visible = !imageBackgroundInputFlash.visible;
-			reloadImageFlash.visible = !reloadImageFlash.visible;
-			backgroundTextFlash.visible = !backgroundTextFlash.visible;
-			saveButton.visible = !saveButton.visible;
-			changeVersion.visible = !changeVersion.visible;
-			versionText.visible = !versionText.visible;
-			versionTextA.visible = !versionTextA.visible;
-			addObject.visible = !addObject.visible;
-			objectText.visible = !objectText.visible;
-			objectTextA.visible = !objectTextA.visible;
-			objectCheckState.visible = !objectCheckState.visible;
+			var panelVisible:Bool = !editorPanelBG.visible;
+
+			editorPanelBG.visible = panelVisible;
+			imageBackgroundInput.visible = panelVisible;
+			reloadImage.visible = panelVisible;
+			allowBackgroundMove.visible = panelVisible;
+			allowMenuItemMove.visible = panelVisible;
+			backgroundText.visible = panelVisible;
+			imageBackgroundInputFlash.visible = panelVisible;
+			reloadImageFlash.visible = panelVisible;
+			backgroundTextFlash.visible = panelVisible;
+			saveButton.visible = panelVisible;
+			changeVersion.visible = panelVisible;
+			versionText.visible = panelVisible;
+			versionTextA.visible = panelVisible;
+			addObject.visible = panelVisible;
+			objectText.visible = panelVisible;
+			objectTextA.visible = panelVisible;
+			objectCheckState.visible = panelVisible;
 		}
+	}
+
+	override public function closeSubState()
+	{
+		super.closeSubState();
+		editorBG.visible = false;
+		checkeredBg.visible = false;
 	}
 
 	function handleMenuItemRemoval()
@@ -516,7 +530,7 @@ class MainMenuEditor extends MusicBeatState
 		{
 			draggedItem.x = FlxG.mouse.x - itemDragOffsetX;
 			draggedItem.y = FlxG.mouse.y - itemDragOffsetY;
-			
+
 			for (i in 0...menuItems.members.length)
 			{
 				if (menuItems.members[i] == draggedItem)
