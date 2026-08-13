@@ -1,4 +1,4 @@
-package editors;
+package substates;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
