@@ -237,7 +237,7 @@ class NotesSubState extends MusicBeatSubstate
 
 	function resetValue(selected:Int, type:Int)
 	{
-		var hueValues = [255, -180, 150, 0];
+		var hueValues = [-75, -180, 150, 0];
 		var resetValue:Int = 0;
 
 		if (type == 0)

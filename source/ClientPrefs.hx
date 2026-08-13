@@ -34,7 +34,7 @@ class SaveVariables {
 	public var noteSplashes:Bool = true;
 	public var bounce:Bool = false;
 	public var arrowHSV:Array<Array<Int>> = [
-	  [255, 0, 0], // Left
+	  [-75, 0, 0], // Left
 	  [-180, 0, 0], // DOwn
 	  [150, 0, 0], // Up
 	  [0, 0, 0]  // Right
