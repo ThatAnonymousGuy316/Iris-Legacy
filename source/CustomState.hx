@@ -126,7 +126,7 @@ class CustomState extends MusicBeatState
 
     override public function stepHit()
     {
-        super.beatHit();
+        super.stepHit();
         if (lua != null)
             lua.set('curStep', curBeat);
         if (hscript != null)
