@@ -118,8 +118,9 @@ class MasterEditorMenu extends MusicBeatState
 		if (controls.ACCEPT)
 		{
 			switch(options[curSelected]) {
+				case 'Custom Menu Editor':
+					MusicBeatState.switchState(new editors.CustomStateEditor());
 				case 'Script Editor':
-					//ScriptEditorState
 					MusicBeatState.switchState(new editors.ScriptEditorState());
 				case 'Crash The Game':
 					Sys.exit(0);

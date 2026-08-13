@@ -69,6 +69,15 @@ import haxe.Json;
 
 using StringTools;
 
+typedef SkinArrayJson = {
+	var skins:Array<Skin>;
+}
+
+typedef Skin = {
+	var name:String;
+	var json:String;
+}
+
 typedef HealthBarJson = {
 	var texture:String;
 	var yDownscroll:Float;
@@ -385,6 +394,7 @@ class PlayState extends MusicBeatState
 
 	var healthBarJson:HealthBarJson;
 	var scoreTxtJson:ScoreTxtStringJson;
+	var skinArray:SkinArrayJson;
 
 	override public function create()
 	{
@@ -393,6 +403,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxtJson = Json.parse(Paths.getTextFromFile('hud/ScoreText.json'));
 		healthBarJson = Json.parse(Paths.getTextFromFile('hud/HealthBar.json'));
+		skinArray = Json.parse(Paths.getTextFromFile('data/Skins.json'));
 
 		ratingStuff = [
 			[scoreTxtJson.ratings.data1, 0.2], // From 0% to 19%
@@ -1090,7 +1101,35 @@ class PlayState extends MusicBeatState
 		dadGroup.add(dad);
 		startCharacterLua(dad.curCharacter);
 
-		boyfriend = new Character(0, 0, SONG.player1, true);
+		var playerSkin = SONG.player1;
+
+		if (!stageData.isPixelStage)
+		{
+			if (ClientPrefs.data.playerSkin == 'minus')
+				playerSkin = 'BoyfriendMinus';
+			else if (ClientPrefs.data.playerSkin == 'minus 2')
+				playerSkin = 'BoyfriendMinus2';
+			else if (ClientPrefs.data.playerSkin == 'minus 3')
+				playerSkin = 'BoyfriendMinus3';
+			else if (ClientPrefs.data.playerSkin == 'pico')
+				playerSkin = 'pico-player';
+			else if (ClientPrefs.data.playerSkin == 'vee')
+				playerSkin = 'Vee';
+			else if (ClientPrefs.data.playerSkin == 'default')
+				playerSkin = SONG.player1;
+			else
+			{
+				for (skin in skinArray.skins)
+				{
+					if (ClientPrefs.data.playerSkin == skin.name)
+					{
+						playerSkin = skin.json;
+					}
+				}
+			}
+		}
+
+		boyfriend = new Character(0, 0, playerSkin, true);
 		startCharacterPos(boyfriend);
 		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
 		{

@@ -72,6 +72,8 @@ class CustomState extends MusicBeatState
 
     public static var curSelected:Int = 0;
 
+    var bg:FlxSprite;
+
     public function new(stateName:String)
     {
         super();
@@ -80,6 +82,8 @@ class CustomState extends MusicBeatState
 
     override function create()
     {
+        super.create();
+
         daJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
         optionShit = [];
 
@@ -100,6 +104,18 @@ class CustomState extends MusicBeatState
 
         if (hscript != null)
             hscript.set('optionShit', optionShit);
+
+        if (daJson.backgroundTexture != null && daJson.backgroundTexture != '')
+        {
+            bg = new FlxSprite(daJson.backgroundX, daJson.backgroundY).loadGraphic(Paths.image(daJson.backgroundTexture));
+            bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+            bg.alpha = daJson.backgroundAlpha;
+            bg.updateHitbox();
+            add(bg);
+        }
+
+        stateObjects = new FlxTypedGroup<FlxBasic>();
+        add(stateObjects);
 
         for (object in daJson.objects)
         {
@@ -135,6 +151,22 @@ class CustomState extends MusicBeatState
 
         if (controls.BACK)
             callScript('onBack', []);
+
+		if (controls.UI_UP_P)
+		{
+            callScript('onUp', []);
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			changeItem(-1);
+            callScript('onUpPost', []);
+		}
+
+		if (controls.UI_DOWN_P)
+		{
+            callScript('onDown', []);
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			changeItem(1);
+            callScript('onDownPost', []);
+		} 
 
         if (controls.ACCEPT)
         {
@@ -188,6 +220,16 @@ class CustomState extends MusicBeatState
 
         if (hscript != null)
             hscript.set(name, value);
+    }
+
+    public function changeItem(change:Int = 0)
+    {
+        curSelected += change;
+		if (curSelected >= stateObjects.length)
+			curSelected = 0;
+		if (curSelected < 0)
+			curSelected = stateObjects.length - 1;
+        callScript('onChangeItem', [change]);
     }
 
     public function getObject(name:String):FlxBasic

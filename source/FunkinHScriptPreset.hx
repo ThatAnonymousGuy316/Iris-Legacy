@@ -13,18 +13,15 @@ using StringTools;
 
 class FunkinHScriptPreset
 {
-    public var script:Dynamic;
-
     public function new(script:Dynamic)
     {
-        this.script = script;
-        presetHaxe();
-        presetFlixel();
-        presetFunkin();
-        presetLegacy();
+        presetHaxe(script);
+        presetFlixel(script);
+        presetFunkin(script);
+        presetLegacy(script);
     }
 
-    public function presetHaxe()
+    public function presetHaxe(script:Dynamic)
     {
         script.set('Std', Std);
         script.set('Math', Math);
@@ -45,7 +42,7 @@ class FunkinHScriptPreset
         });
     }
 
-    public function presetFlixel()
+    public function presetFlixel(script:Dynamic)
     {
         script.set('FlxG', flixel.FlxG);
         script.set('FlxBasic', flixel.FlxBasic);
@@ -74,7 +71,7 @@ class FunkinHScriptPreset
         script.set('FlxColor', FunkinHScriptColor);
     }
 
-    public function presetFunkin()
+    public function presetFunkin(script:Dynamic)
     {
         script.set('MusicBeatState', MusicBeatState);
         script.set('MusicBeatSubstate', MusicBeatSubstate);
@@ -94,11 +91,11 @@ class FunkinHScriptPreset
         script.set('FlxUIDropDownMenuCustom', FlxUIDropDownMenuCustom);
         script.set('CoolUtil', CoolUtil);
         script.set('Conductor', Conductor);
-        script.set('DialogueBox', DialogueBoxPsych);
+        script.set('DialogueBox', DialogueBox);
         script.set('DialogueBoxPsych', DialogueBoxPsych);
     }
 
-    public function presetLegacy()
+    public function presetLegacy(script:Dynamic)
     {
         script.set('goToStoryMode', function(){
             MusicBeatState.switchState(new StoryMenuState());
@@ -124,7 +121,7 @@ class FunkinHScriptPreset
         script.set('GrayscaleShader', GrayscaleShader);
         script.set('CRTShader', CRTShader);
         script.set('TJSON', tjson.TJSON);
-		script.set('script.setVar', function(name:String, value:Dynamic)
+		script.set('setVar', function(name:String, value:Dynamic)
 		{
 			PlayState.instance.variables.set(name, value);
 		});

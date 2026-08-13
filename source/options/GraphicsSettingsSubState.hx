@@ -24,15 +24,20 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 import openfl.Lib;
+import PlayState;
 
 using StringTools;
 
 class GraphicsSettingsSubState extends BaseOptionsMenu
 {
+	var skinArray:SkinArrayJson;
+
 	public function new()
 	{
 		title = 'Graphics';
 		rpcTitle = 'Graphics Settings Menu'; //for Discord Rich Presence
+
+		skinArray = Json.parse(Paths.getTextFromFile('data/Skins.json'));
 
 		//I'd suggest using "Low Quality" as an example for making your own option since it is the simplest here
 		var option:Option = new Option('Low Quality', //Name
@@ -73,6 +78,20 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		option.displayFormat = '%v FPS';
 		option.onChange = onChangeFramerate;
 		#end
+
+		var charArray = ['default', 'minus', 'minus 2', 'minus 3', 'pico', 'vee'];
+
+		for (skin in skinArray.skins)
+		{
+			charArray.push(skin.name);
+		}
+
+		var option:Option = new Option('Player Skin:',
+			"What should the Player Skin?",
+			'playerSkin',
+			'string',
+			charArray);
+		addOption(option);
 
 		super();
 	}

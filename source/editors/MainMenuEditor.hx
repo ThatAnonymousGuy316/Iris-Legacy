@@ -171,6 +171,7 @@ class MainMenuEditor extends MusicBeatState
 			function()
 			{
 				canBackgroundMove = !canBackgroundMove;
+				canMenuItemMove = false;
 
 				if (!canBackgroundMove)
 					draggingBg = false;
@@ -184,6 +185,7 @@ class MainMenuEditor extends MusicBeatState
 			function()
 			{
 				canMenuItemMove = !canMenuItemMove;
+				canBackgroundMove = false;
 
 				if (!canMenuItemMove)
 				{
@@ -388,6 +390,7 @@ class MainMenuEditor extends MusicBeatState
 			addObject.visible = !addObject.visible;
             objectText.visible = !objectText.visible;
             objectTextA.visible = !objectTextA.visible;
+			objectCheckState.visible = !objectCheckState.visible;
         }
 	}
 
