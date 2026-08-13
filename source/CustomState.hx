@@ -68,6 +68,8 @@ class CustomState extends MusicBeatState
     public var stateObjects:FlxTypedGroup<FlxBasic>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
 
+    public var optionShit:Array<String> = [];
+
     public static var curSelected:Int = 0;
 
     public function new(stateName:String)
@@ -75,28 +77,51 @@ class CustomState extends MusicBeatState
         super();
         this.stateName = stateName;
     }
+
     override function create()
     {
         daJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
+        optionShit = [];
+
+        for (i in daJson.objects)
+            optionShit.push(i.name);
+
         if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.lua')))
             lua = new FunkinLua(Paths.modFolders('states/scripts/${stateName}.lua'));
+
         if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.hxs')))
             hscript = new FunkinHScript(Paths.modFolders('states/scripts/${stateName}.hxs'));
+
+        setScript('getObject', getObject);
+
+        setScript('getOptions', function() {
+            return optionShit[curSelected];
+        });
+
+        if (hscript != null)
+            hscript.set('optionShit', optionShit);
+
         for (object in daJson.objects)
         {
             var sprite:FlxSprite = new FlxSprite(object.x, object.y);
+
             if (object.hasFrames)
             {
                 sprite.frames = Paths.getSparrowAtlas(object.texture);
-                sprite.animation.addByPrefix(object.animationPrefix, object.animationPrefix, object.animationFramerate, object.animationLoops);
+                sprite.animation.addByPrefix(
+                    object.animationPrefix,
+                    object.animationPrefix,
+                    object.animationFramerate,
+                    object.animationLoops
+                );
                 sprite.animation.play(object.animationPrefix);
             }
             else
                 sprite.loadGraphic(object.texture);
 
             sprite.alpha = object.alpha;
-
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
+
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
         }
@@ -105,38 +130,66 @@ class CustomState extends MusicBeatState
     override public function update(elapsed:Float)
     {
         super.update(elapsed);
-        if (lua != null)
-            lua.call('onUpdate', [elapsed]);
-        if (hscript != null)
-            hscript.call('onUpdate', [elapsed]);
+
+        callScript('onUpdate', [elapsed]);
+
+        if (controls.BACK)
+            callScript('onBack', []);
+
+        if (controls.ACCEPT)
+        {
+            callScript('onAcceptPre', []);
+
+            switch (optionShit[curSelected])
+            {
+                default:
+                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.lua')))
+                        var scriptlua = new FunkinLua(Paths.modFolders('states/buttons/${optionShit[curSelected]}.lua'));
+
+                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.hxs')))
+                        var scripthscript = new FunkinHScript(Paths.modFolders('states/buttons/${optionShit[curSelected]}.hxs'));
+
+                    callScript('onAccept', []);
+            }
+
+            callScript('onAcceptPost', []);
+        }
     }
 
     override public function beatHit()
     {
         super.beatHit();
-        if (lua != null)
-            lua.set('curBeat', curBeat);
-        if (hscript != null)
-            hscript.set('curBeat', curBeat);
-        if (lua != null)
-            lua.call('onBeatHit', []);
-        if (hscript != null)
-            hscript.call('onBeatHit', []);
+
+        setScript('curBeat', curBeat);
+        callScript('onBeatHit', []);
     }
 
     override public function stepHit()
     {
         super.stepHit();
-        if (lua != null)
-            lua.set('curStep', curBeat);
-        if (hscript != null)
-            hscript.set('curStep', curBeat);
-        if (lua != null)
-            lua.call('onStepHit', []);
-        if (hscript != null)
-            hscript.call('onStepHit', []);
+
+        setScript('curStep', curBeat);
+        callScript('onStepHit', []);
     }
-    
+
+    public function callScript(func:String, args:Array<Dynamic>):Void
+    {
+        if (lua != null)
+            lua.call(func, args);
+
+        if (hscript != null)
+            hscript.call(func, args);
+    }
+
+    public function setScript(name:String, value:Dynamic):Void
+    {
+        if (lua != null)
+            lua.set(name, value);
+
+        if (hscript != null)
+            hscript.set(name, value);
+    }
+
     public function getObject(name:String):FlxBasic
     {
         return stateVariables.get(name);

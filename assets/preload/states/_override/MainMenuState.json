@@ -4,22 +4,26 @@
 		{
 			"x": 336.5,
 			"y": 109,
-			"name": "story_mode"
+			"name": "story_mode",
+			"goesToState": true
 		},
 		{
 			"x": 401,
 			"y": 235,
-			"name": "freeplay"
+			"name": "freeplay",
+			"goesToState": true
 		},
 		{
 			"x": 409,
 			"y": 372,
-			"name": "credits"
+			"name": "credits",
+			"goesToState": true
 		},
 		{
 			"x": 408.5,
 			"y": 487,
-			"name": "options"
+			"name": "options",
+			"goesToState": true
 		}
 	],
 	"background": "menuBG",

@@ -8,6 +8,7 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.addons.ui.FlxUICheckBox;
 import haxe.Json;
 
 using StringTools;
@@ -59,6 +60,10 @@ class MainMenuEditor extends MusicBeatState
 	var addObject:FlxButton;
 	var objectText:FlxUIInputText;
     var objectTextA:FlxText;
+
+	var objectCheckState:FlxUICheckBox;
+
+	public var doesObjectGoToState:Bool = true;
 
 	override public function create()
 	{
@@ -224,6 +229,15 @@ class MainMenuEditor extends MusicBeatState
 			8
 		);
 
+		objectCheckState = new FlxUICheckBox(10, objectText.y + 50, null, null, "Object Goes To A State?", 100);
+		objectCheckState.checked = doesObjectGoToState;
+		// _song.needsVoices = check_voices.checked;
+		objectCheckState.callback = function()
+		{
+			doesObjectGoToState = objectCheckState.checked;
+			//trace('CHECKED!');
+		};
+
 		addObject = new FlxButton(
 			objectText.x + 210,
 			objectText.y - 3,
@@ -231,6 +245,7 @@ class MainMenuEditor extends MusicBeatState
 			function()
 			{
 				var newObject:OptionDataJson = {
+					goesToState: objectCheckState.checked,
 					name: objectText.text,
 					x: 0,
 					y: 0,
@@ -288,6 +303,7 @@ class MainMenuEditor extends MusicBeatState
 
 		add(objectText);
 		add(addObject);
+		add(objectCheckState);
 
         backgroundText = new FlxText(
             15,

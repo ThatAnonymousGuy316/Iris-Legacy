@@ -260,7 +260,10 @@ class PauseSubState extends MusicBeatSubstate
 					if(PlayState.isStoryMode) {
 						MusicBeatState.switchState(new StoryMenuState());
 					} else {
-						MusicBeatState.switchState(new FreeplayStateNew());
+						if (FreeplayState.legacyFreeplay)
+							MusicBeatState.switchState(new FreeplayState());
+						else
+							MusicBeatState.switchState(new FreeplayStateNew());
 					}
 					PlayState.cancelMusicFadeTween();
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));

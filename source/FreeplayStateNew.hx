@@ -68,6 +68,8 @@ class FreeplayStateNew extends MusicBeatState
 
     function onCreate()
     {
+        FreeplayState.legacyFreeplay = false;
+        
         WeekData.reloadWeekFiles(false);
 
         for (i in 0...WeekData.weeksList.length)

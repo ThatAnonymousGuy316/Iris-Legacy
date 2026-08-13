@@ -25,6 +25,8 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
+	public static var legacyFreeplay:Bool = false;
+	
 	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;

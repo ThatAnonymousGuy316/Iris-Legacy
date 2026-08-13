@@ -35,6 +35,7 @@ typedef MainMenuJson = {
 }
 
 typedef OptionDataJson = {
+	var goesToState:Bool;
 	var name:String;
 	var x:Float;
 	var y:Float;
@@ -181,7 +182,7 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate')
+				if (!menuJson.options[curSelected].goesToState)
 				{
 					CoolUtil.browserLoad('https://ninja-muffin24.itch.io/funkin');
 				}

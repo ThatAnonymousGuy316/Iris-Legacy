@@ -87,6 +87,7 @@ typedef ScoreTxtStringJson = {
 	var xPlus:Float;
 	var yPlus:Float;
 	var daText:String;
+	var font:String;
 	var maxPercent:Float;
 	var decimals:Int;
 	var commaSeperated:Bool;
@@ -1326,7 +1327,7 @@ class PlayState extends MusicBeatState
 		}
 
 		scoreTxt = new FlxText(0, healthBarBG.y, FlxG.width, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.setFormat(Paths.font(scoreTxtJson.font), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
@@ -3786,7 +3787,7 @@ class PlayState extends MusicBeatState
 
 	function doDeathCheck(?skipHealthCheck:Bool = false)
 	{
-		if (((skipHealthCheck && instakillOnMiss) || health <= 0) && !practiceMode && !isDead)
+		if ((health <= 0) && !practiceMode && !isDead)
 		{
 			var ret:Dynamic = callOnLuas('onGameOver', [], false);
 			if (ret != FunkinLua.Function_Stop)
@@ -4548,7 +4549,10 @@ class PlayState extends MusicBeatState
 				{
 					CustomFadeTransition.nextCamera = null;
 				}
-				MusicBeatState.switchState(new FreeplayStateNew());
+				if (FreeplayState.legacyFreeplay)
+					MusicBeatState.switchState(new FreeplayState());
+				else
+					MusicBeatState.switchState(new FreeplayStateNew());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 				changedDifficulty = false;
 			}
@@ -4633,6 +4637,15 @@ class PlayState extends MusicBeatState
 			{
 				songMisses += 1;
 				combo = 0;
+			}
+		}
+
+		if (ClientPrefs.getGameplaySetting('instakillSick', false))
+		{
+			if (daRating.name == 'sick')
+			{
+				health = -641;
+				doDeathCheck(false);
 			}
 		}
 
@@ -5683,7 +5696,8 @@ class PlayState extends MusicBeatState
 		}
 		for (hscript in hxcArray)
 		{
-			hscript.script.call(event, args);
+			if (hscript.script.variables.exists(event))
+				hscript.script.call(event, args);
 		}
 		var returnVal:Dynamic = FunkinLua.Function_Continue;
 		#if LUA_ALLOWED
@@ -5789,6 +5803,14 @@ class PlayState extends MusicBeatState
 			fullComboFunction();
 		}
 		updateScore(badHit); // score will only update after rating is calculated, if it's a badHit, it shouldn't bounce -Ghost
+		if (ClientPrefs.getGameplaySetting('instakill70Percent', false))
+		{
+			if (ratingPercent >= 0.72)
+			{
+				health = -641;
+				doDeathCheck(false);
+			}
+		}
 		setOnLuas('rating', ratingPercent);
 		setOnLuas('ratingName', ratingName);
 		setOnLuas('ratingFC', ratingFC);

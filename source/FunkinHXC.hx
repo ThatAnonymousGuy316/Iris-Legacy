@@ -20,8 +20,10 @@ class FunkinHXC
     public function new(filePath:String)
     {
         script = new Script(File.getContent(filePath), haxe.io.Path.withoutExtension(haxe.io.Path.withoutDirectory(filePath)));
+        new FunkinHScriptPreset(this);
         script.start();
-        script.call('onCreate');
+        if (script.variables.exists('onCreate'))
+            script.call('onCreate');
     }
 
     public function set(name:String, data:Dynamic)

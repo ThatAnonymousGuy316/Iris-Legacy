@@ -5,6 +5,7 @@
     "xPlus": 300,
     "yPlus": 0,
     "daText": "Score: [SCORE] • Misses: [MISS] • Rating: [RATINGPERCENT]%",
+    "font": "vcr.ttf",
     "maxPercent": 100,
     "decimals": 0,
     "commaSeperated": true,
