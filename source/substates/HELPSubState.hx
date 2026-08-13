@@ -5,6 +5,9 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
+import flixel.addons.display.FlxBackdrop;
+import flixel.util.FlxAxes;
+
 class HELPSubState extends MusicBeatSubstate
 {
 	// The static variable that other editors will overwrite
@@ -19,6 +22,12 @@ class HELPSubState extends MusicBeatSubstate
 		bg.alpha = 0.7;
 		bg.scrollFactor.set();
 		add(bg);
+		
+		var scrollingBg:FlxBackdrop = new FlxBackdrop(Paths.image('whiteDots'), FlxAxes.X, 0, 0);
+		scrollingBg.velocity.set(-100, 0); // Change speed and direction here (X and Y)
+		scrollingBg.scrollFactor.x = 0.9; // Adjust parallax scroll factor if needed
+		scrollingBg.scrollFactor.y = 0.9; // Adjust parallax scroll factor if needed
+		add(scrollingBg);
 
 		// The main help text
 		var infoText:FlxText = new FlxText(0, 0, FlxG.width - 100, helpText, 32);
