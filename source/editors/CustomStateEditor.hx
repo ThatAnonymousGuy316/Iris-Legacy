@@ -39,6 +39,9 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import CustomState;
+import flixel.ui.FlxButton;
+import flixel.addons.ui.FlxUIInputText;
+import flixel.addons.ui.FlxUICheckBox;
 
 class CustomStateEditor extends MusicBeatState
 {
