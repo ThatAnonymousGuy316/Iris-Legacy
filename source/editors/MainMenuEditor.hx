@@ -73,7 +73,7 @@ class MainMenuEditor extends MusicBeatState
 		FlxG.mouse.visible = true;
 
 		// Add a semi-transparent black box behind the editor UI controls
-		var editorPanelBG:FlxSprite = new FlxSprite(10, 10).makeGraphic(540, 250, FlxColor.BLACK);
+		editorPanelBG = new FlxSprite(10, 10).makeGraphic(540, 250, FlxColor.BLACK);
 		editorPanelBG.alpha = 0.65;
 		editorPanelBG.scrollFactor.set();
 		add(editorPanelBG);
