@@ -120,6 +120,8 @@
 	<haxelib name="hxcpp-debug-server" if="debug"/>
 	<haxelib name="tjson" />
 
+	<haxelib name="hxwindowcolormode" />
+
 	<!--Set this to the engine you're using!-->
 	<define name="PSYCH" />
 	<haxelib name="fnf-modcharting-tools" />
