@@ -14,6 +14,7 @@ class SaveVariables {
 	public var globalAntialiasing:Bool = true;
 	public var missOnBad:Bool = false;
 	public var hitsoundType:String = 'Default';
+	public var playerSkin:String = 'bf';
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;

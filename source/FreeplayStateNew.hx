@@ -214,8 +214,6 @@ class FreeplayStateNew extends MusicBeatState
     {
         persistentUpdate = false;
 
-        Paths.currentModDirectory = freeplaySongs[curSelected].folder;
-
         var songLowercase:String = Paths.formatToSongPath(freeplaySongs[curSelected].name);
         var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
 
@@ -286,6 +284,8 @@ class FreeplayStateNew extends MusicBeatState
 
         bg.loadGraphic(Paths.image('freeplay/bgs/${freeplaySongs[curSelected].character}'));
         freeplayArtwork.loadGraphic(Paths.image('freeplay/artwork/${freeplaySongs[curSelected].character}'));
+
+        Paths.currentModDirectory = freeplaySongs[curSelected].folder;
     }
 
     function weekIsLocked(name:String):Bool
