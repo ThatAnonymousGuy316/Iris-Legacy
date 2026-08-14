@@ -91,11 +91,11 @@ class CustomState extends MusicBeatState
         for (i in daJson.objects)
             optionShit.push(i.name);
 
-        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.lua')))
-            lua = new FunkinLua(Paths.modFolders('states/scripts/${stateName}.lua'));
+        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.${FunkinLua.ext}')))
+            lua = new FunkinLua(Paths.modFolders('states/scripts/${stateName}.${FunkinLua.ext}'));
 
-        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.hxs')))
-            hscript = new FunkinHScript(Paths.modFolders('states/scripts/${stateName}.hxs'));
+        if (sys.FileSystem.exists(Paths.modFolders('states/scripts/${stateName}.${FunkinHScript.ext}')))
+            hscript = new FunkinHScript(Paths.modFolders('states/scripts/${stateName}.${FunkinHScript.ext}'));
 
         setScript('getObject', getObject);
 
@@ -177,11 +177,11 @@ class CustomState extends MusicBeatState
             switch (optionShit[curSelected])
             {
                 default:
-                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.lua')))
-                        var scriptlua = new FunkinLua(Paths.modFolders('states/buttons/${optionShit[curSelected]}.lua'));
+                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.${FunkinLua.ext}')))
+                        var scriptlua = new FunkinLua(Paths.modFolders('states/buttons/${optionShit[curSelected]}.${FunkinLua.ext}'));
 
-                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.hxs')))
-                        var scripthscript = new FunkinHScript(Paths.modFolders('states/buttons/${optionShit[curSelected]}.hxs'));
+                    if (sys.FileSystem.exists(Paths.modFolders('states/buttons/${optionShit[curSelected]}.${FunkinHScript.ext}')))
+                        var scripthscript = new FunkinHScript(Paths.modFolders('states/buttons/${optionShit[curSelected]}.${FunkinHScript.ext}'));
 
                     callScript('onAccept', []);
             }

@@ -17,6 +17,8 @@ class FunkinHXC
 {
     public var script:Script;
 
+    public static var ext:String = 'hxc';
+
     public function new(filePath:String)
     {
         script = new Script(File.getContent(filePath), haxe.io.Path.withoutExtension(haxe.io.Path.withoutDirectory(filePath)));
