@@ -18,7 +18,7 @@ class SustainHolds extends FlxSprite
 {
     public var colorSwap:ColorSwap = null;
 
-    public function new(texture:String, x:Float, y:Float, ?note:Note, noteData:Int = 0, )
+    public function new(texture:String, x:Float, y:Float, ?note:Note, noteData:Int = 0)
     {
         super(x, y);
 
