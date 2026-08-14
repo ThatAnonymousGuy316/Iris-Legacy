@@ -219,10 +219,10 @@ class MainMenuState extends MusicBeatState
 								switch (daChoice)
 								{
 									default:
-										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.lua')))
-											var scriptLUA:FunkinLua = new FunkinLua(Paths.modFolders('menuButtons/${daChoice}.lua'));
-										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.hxs')))
-											var scriptHX:FunkinHScript = new FunkinHScript(Paths.modFolders('menuButtons/${daChoice}.hxs'));
+										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.${FunkinLua.ext}')))
+											var scriptLUA:FunkinLua = new FunkinLua(Paths.modFolders('menuButtons/${daChoice}.${FunkinLua.ext}'));
+										if (sys.FileSystem.exists(Paths.modFolders('menuButtons/${daChoice}.${FunkinHScript.ext}')))
+											var scriptHX:FunkinHScript = new FunkinHScript(Paths.modFolders('menuButtons/${daChoice}.${FunkinHScript.ext}'));
 								}
 							});
 						}

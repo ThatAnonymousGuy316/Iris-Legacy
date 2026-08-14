@@ -20,6 +20,8 @@ class FunkinHScript
     public var parser:Parser;
     public var interp:Interp;
 
+    public static var ext:String = 'hxs';
+
     public function new(filePath:String)
     {
         parser = new Parser();

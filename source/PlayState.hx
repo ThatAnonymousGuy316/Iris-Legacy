@@ -1019,17 +1019,17 @@ class PlayState extends MusicBeatState
 			{
 				for (file in FileSystem.readDirectory(folder))
 				{
-					if (file.endsWith('.lua') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinLua.ext}') && !filesPushed.contains(file))
 					{
 						luaArray.push(new FunkinLua(folder + file));
 						filesPushed.push(file);
 					}
-					if (file.endsWith('.hxs') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinHScript.ext}') && !filesPushed.contains(file))
 					{
 						hscriptArray.push(new FunkinHScript(folder + file));
 						filesPushed.push(file);
 					}
-					if (file.endsWith('.hxc') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinHXC.ext}') && !filesPushed.contains(file))
 					{
 						hxcArray.push(new FunkinHXC(folder + file));
 						filesPushed.push(file);
@@ -1471,17 +1471,17 @@ class PlayState extends MusicBeatState
 			{
 				for (file in FileSystem.readDirectory(folder))
 				{
-					if (file.endsWith('.lua') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinLua.ext}') && !filesPushed.contains(file))
 					{
 						luaArray.push(new FunkinLua(folder + file));
 						filesPushed.push(file);
 					}
-					if (file.endsWith('.hxs') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinHScript.ext}') && !filesPushed.contains(file))
 					{
 						hscriptArray.push(new FunkinHScript(folder + file));
 						filesPushed.push(file);
 					}
-					if (file.endsWith('.hxc') && !filesPushed.contains(file))
+					if (file.endsWith('.${FunkinHXC.ext}') && !filesPushed.contains(file))
 					{
 						hxcArray.push(new FunkinHXC(folder + file));
 						filesPushed.push(file);
@@ -1645,7 +1645,7 @@ class PlayState extends MusicBeatState
 	public function runLua(file:String)
 	{
 		var doPush:Bool = false;
-		var luaFile:String = file + '.lua';
+		var luaFile:String = file + '.${FunkinLua.ext}';
 		if (FileSystem.exists(Paths.modFolders(luaFile)))
 		{
 			luaFile = Paths.modFolders(luaFile);
@@ -1669,7 +1669,7 @@ class PlayState extends MusicBeatState
 	public function runHX(file:String)
 	{
 		var doPush:Bool = false;
-		var luaFile:String = file + '.hxs';
+		var luaFile:String = file + '.${FunkinHScript.ext}';
 		if (FileSystem.exists(Paths.modFolders(luaFile)))
 		{
 			luaFile = Paths.modFolders(luaFile);
@@ -1693,7 +1693,7 @@ class PlayState extends MusicBeatState
 	public function runHXC(file:String)
 	{
 		var doPush:Bool = false;
-		var luaFile:String = file + '.hxc';
+		var luaFile:String = file + '.${FunkinHXC.ext}';
 		if (FileSystem.exists(Paths.modFolders(luaFile)))
 		{
 			luaFile = Paths.modFolders(luaFile);
