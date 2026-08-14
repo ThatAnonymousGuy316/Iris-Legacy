@@ -1625,7 +1625,6 @@ class PlayState extends MusicBeatState
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype', 'multiplicative');
-
 		switch (songSpeedType)
 		{
 			case "multiplicative":
@@ -1633,6 +1632,7 @@ class PlayState extends MusicBeatState
 			case "constant":
 				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
 		}
+		botplayTxt.visible = cpuControlled;
 	}
 
 	public function runLua(file:String)
