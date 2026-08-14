@@ -51,4 +51,6 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+import objects.*;
+
 import flixel.FlxG;

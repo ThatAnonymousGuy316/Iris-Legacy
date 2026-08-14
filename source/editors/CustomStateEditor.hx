@@ -144,18 +144,22 @@ class CustomStateEditor extends MusicBeatState
 			8
 		);
 
+		var objecthasFramesCheck = new FlxUICheckBox(10, objectText.y + 50, null, null, "Object Has Frames?", 100);
+		objecthasFramesCheck.checked = false;
+
 		var addObjectButton = new FlxButton(
 			addObjectInputText.x + 210,
 			addObjectInputText.y - 3,
 			"Add Object",
 			function()
 			{
-                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0, Std.parseFloat(addObjectInputText2.text), Std.parseFloat(addObjectInputText3.text));
+                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0, Std.parseFloat(addObjectInputText2.text), Std.parseFloat(addObjectInputText3.text), objecthasFramesCheck.checked);
 			}
 		);
         epicGroup.add(addObjectInputText);
         epicGroup.add(addObjectInputText2);
         epicGroup.add(addObjectInputText3);
+        epicGroup.add(objecthasFramesCheck);
         epicGroup.add(addObjectButton);
         epicGroup.add(new FlxText(15,addObjectInputText.y - 16,0,'Name/Texture:'));
         epicGroup.add(new FlxText(15,addObjectInputText2.y - 16,0,'Alpha:'));
