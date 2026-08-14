@@ -3,7 +3,6 @@ var customBar;
 var scrool;
 var crackMe;
 var scrollOffset = 0.0;
-var base;
 
 function onCreatePost() {
     if (this.healthBar != null) this.healthBar.visible = false;
@@ -23,11 +22,13 @@ function onCreatePost() {
     scrool.cameras = [this.camHUD];
 
     crackMe = new FlxSprite(customBar.x, customBar.y);
-    crackMe.loadGraphic(Paths.image('health/crack_me'));
+    crackMe.loadGraphic(Paths.image('health/health_crack'));
     crackMe.cameras = [this.camHUD];
     crackMe.visible = false;
 
-    this.iconP1.flipX = true;
+    if (this.iconP1 != null) {
+        this.iconP1.flipX = true;
+    }
 
     add(customBG);
     add(crackMe);
@@ -37,36 +38,36 @@ function onCreatePost() {
 
 function onUpdatePost(elapsed) {
     if (customBar != null && scrool != null) {
+        var barHeight = customBar.height;
+        var barWidth = customBar.width;
+
         if (this.boyfriend != null && this.boyfriend.healthColorArray != null && customBG != null) {
             var bfC = this.boyfriend.healthColorArray;
-            customBG.color = (bfC[0] << 16) | (bfC[1] << 8) | bfC[2];
+            customBG.color = FlxColor.fromRGB(bfC[0], bfC[1], bfC[2]);
         }
 
         scrollOffset += elapsed * 60;
 
-    if (this.iconP1 != null && customBG != null) {
-        customBG.color = this.boyfriend.healthColorArray != null ? FlxColor.fromRGB(this.boyfriend.healthColorArray[0], this.boyfriend.healthColorArray[1], this.boyfriend.healthColorArray[2]) : this.iconP1.color;
-    }
+        scrool.visible = true;
+        scrool.x = customBar.x;
+        scrool.y = customBar.y;
 
-    scrool.visible = true;
-    scrool.x = customBar.x;
-    scrool.y = customBar.y;
+        var scrollMax = scrool.frameHeight - barHeight;
+        var currentScroll = 0.0;
 
-    var scrollMax = scrool.frameHeight - barHeight;
-    var currentScroll = 0.0;
+        if (scrollMax > 0) {
+            currentScroll = scrollOffset % scrollMax;
+        }
 
-    if (scrollMax > 0) {
-        currentScroll = scrollOffset % scrollMax;
-    }
+        scrool.clipRect = new FlxRect(0, scrollMax - currentScroll, scrool.frameWidth, barHeight);
 
-    scrool.clipRect = new FlxRect(0, scrollMax - currentScroll, scrool.frameWidth, barHeight);
+        if (crackMe != null) {
+            crackMe.visible = (this.health < 0.4);
+        }
 
-    if (crackMe != null) {
-        crackMe.visible = (this.health < 0.4);
-    }
-
-    if (this.iconP1 != null) {
-        this.iconP1.x = customBar.x + (barWidth / 2) - (this.iconP1.width / 2);
-        this.iconP1.y = customBar.y - this.iconP1.height + 15;
+        if (this.iconP1 != null) {
+            this.iconP1.x = customBar.x + (barWidth / 2) - (this.iconP1.width / 2);
+            this.iconP1.y = customBar.y - this.iconP1.height + 15;
+        }
     }
 }
