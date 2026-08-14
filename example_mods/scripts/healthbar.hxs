@@ -3,6 +3,7 @@ var customBar;
 var scrool;
 var crackMe;
 var scrollOffset = 0.0;
+var base;
 
 function onCreatePost() {
     if (this.healthBar != null) this.healthBar.visible = false;
@@ -35,34 +36,38 @@ function onCreatePost() {
 }
 
 function onUpdatePost(elapsed) {
-    scrollOffset += elapsed * 60;
+    if (customBar != null && scrool != null) {
+        if (this.boyfriend != null && this.boyfriend.healthColorArray != null && customBG != null) {
+            var bfC = this.boyfriend.healthColorArray;
+            customBG.color = (bfC[0] << 16) | (bfC[1] << 8) | bfC[2];
+        }
 
-    var barHeight = customBar.height;
-    var barWidth = customBar.width;
+        scrollOffset += elapsed * 60;
 
-    if (this.iconP1 != null && customBG != null) {
-        customBG.color = this.iconP1.color;
-    }
+        var barHeight = customBar.height;
+        var barWidth = customBar.width;
 
-    scrool.visible = true;
-    scrool.x = customBar.x;
-    scrool.y = customBar.y;
+        scrool.visible = true;
 
-    var scrollMax = scrool.frameHeight - barHeight;
-    var currentScroll = 0.0;
+        var scrollMax = scrool.frameHeight - barHeight;
+        var currentScroll = 0.0;
 
-    if (scrollMax > 0) {
-        currentScroll = scrollOffset % scrollMax;
-    }
+        if (scrollMax > 0) {
+            currentScroll = scrollOffset % scrollMax;
+        }
 
-    scrool.clipRect = new FlxRect(0, currentScroll, scrool.frameWidth, barHeight);
+        scrool.clipRect = new FlxRect(0, currentScroll, scrool.frameWidth, barHeight);
 
-    if (crackMe != null) {
-        crackMe.visible = (this.health < 0.4);
-    }
+        scrool.x = customBar.x;
+        scrool.y = customBar.y - currentScroll;
 
-    if (this.iconP1 != null) {
-        this.iconP1.x = customBar.x + (barWidth / 2) - (this.iconP1.width / 2);
-        this.iconP1.y = customBar.y - this.iconP1.height + 15;
+        if (crackMe != null) {
+            crackMe.visible = (this.health < 0.4);
+        }
+
+        if (this.iconP1 != null) {
+            this.iconP1.x = customBar.x + (barWidth / 2) - (this.iconP1.width / 2);
+            this.iconP1.y = customBar.y - this.iconP1.height + 15;
+        }
     }
 }
