@@ -3,6 +3,7 @@ var customBar;
 var scrool;
 var crackMe;
 var scrollOffset = 0.0;
+var base;
 
 function onCreatePost() {
     if (this.healthBar != null) this.healthBar.visible = false;
@@ -41,7 +42,7 @@ function onUpdatePost(elapsed) {
     var barWidth = customBar.width;
 
     if (this.iconP1 != null && customBG != null) {
-        customBG.color = this.iconP1.color;
+        customBG.color = this.boyfriend.healthColorArray != null ? FlxColor.fromRGB(this.boyfriend.healthColorArray[0], this.boyfriend.healthColorArray[1], this.boyfriend.healthColorArray[2]) : this.iconP1.color;
     }
 
     scrool.visible = true;
@@ -55,7 +56,7 @@ function onUpdatePost(elapsed) {
         currentScroll = scrollOffset % scrollMax;
     }
 
-    scrool.clipRect = new FlxRect(0, currentScroll, scrool.frameWidth, barHeight);
+    scrool.clipRect = new FlxRect(0, scrollMax - currentScroll, scrool.frameWidth, barHeight);
 
     if (crackMe != null) {
         crackMe.visible = (this.health < 0.4);
