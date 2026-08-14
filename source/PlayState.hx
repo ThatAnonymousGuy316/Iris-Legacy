@@ -1336,7 +1336,7 @@ class PlayState extends MusicBeatState
 		cornerMark.setPosition(FlxG.width - (cornerMark.width + 5), 5);
 		cornerMark.antialiasing = true;
 
-		var cornerMark2:FlxText = new FlxText(0, 0, 0, '${SONG.song} - ${CoolUtil.difficultyString()}');
+		var cornerMark2:FlxText = new FlxText(0, 0, 0, '${SONG.song} • ${CoolUtil.difficultyString()}');
 		cornerMark2.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE);
 		cornerMark2.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		uiGroup.add(cornerMark2);
