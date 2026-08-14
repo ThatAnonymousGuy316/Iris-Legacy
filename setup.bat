@@ -12,7 +12,7 @@ haxelib install hxcpp-debug-server 1.2.4
 haxelib install tjson 1.4.0
 haxelib install hxCodec 2.6.1
 haxelib install hxdiscord_rpc 1.2.4
-haxelib install hxWindowColorMode 0.2.1 
+haxelib install hxWindowColorMode 0.2.1
 
 echo Installing hscript...
 haxelib install hscript
