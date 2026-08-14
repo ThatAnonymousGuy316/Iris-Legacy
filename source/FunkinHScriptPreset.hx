@@ -69,6 +69,7 @@ class FunkinHScriptPreset
         script.set('insert', FlxG.state.insert);
         script.set('this', FlxG.state);
         script.set('FlxColor', FunkinHScriptColor);
+        script.set('FlxRect', flixel.math.FlxRect);
     }
 
     public function presetFunkin(script:Dynamic)
@@ -99,6 +100,21 @@ class FunkinHScriptPreset
 
     public function presetLegacy(script:Dynamic)
     {
+        script.set('indexOf', function(a:Dynamic){
+            FlxG.state.members.indexOf(a);
+        });
+        script.set('toLowerCase', function(a:Dynamic){
+            a.toLowerCase();
+        });
+        script.set('toUpperCase', function(a:Dynamic){
+            a.toUpperCase();
+        });
+        script.set('endsWith', function(a:Dynamic, b:Dynamic){
+            a.endsWith(b);
+        });
+        script.set('startsWith', function(a:Dynamic, b:Dynamic){
+            a.startsWith(b);
+        });
         script.set('goToStoryMode', function(){
             MusicBeatState.switchState(new StoryMenuState());
         });

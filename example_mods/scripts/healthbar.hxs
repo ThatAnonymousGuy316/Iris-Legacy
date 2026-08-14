@@ -5,27 +5,27 @@ var scrollOffset = 0.0;
 
 function onCreatePost() {
    
-    if (healthBar != null) healthBar.visible = false;
-    if (iconP2 != null) iconP2.visible = false;
+    if (this.healthBar != null) this.healthBar.visible = false;
+    if (this.iconP2 != null) this.iconP2.visible = false;
 
 
     customBar = new FlxSprite(100, 200);
     customBar.loadGraphic(Paths.image('health/bar'));
-    customBar.cameras = [camHUD];
+    customBar.cameras = [this.camHUD];
 
 
     scrool = new FlxSprite(customBar.x, customBar.y);
     scrool.loadGraphic(Paths.image('health/scrool'));
-    scrool.cameras = [camHUD];
+    scrool.cameras = [this.camHUD];
 
 
     crackMe = new FlxSprite(customBar.x, customBar.y);
     crackMe.loadGraphic(Paths.image('health/crack_me'));
-    crackMe.cameras = [camHUD];
+    crackMe.cameras = [this.camHUD];
     crackMe.visible = false; // Hidden by default
 
 
-    var barOrder = members.indexOf(healthBar);
+    var barOrder = indexOf(this.healthBar);
     if (barOrder != -1) {
         insert(barOrder + 1, scrool);
         insert(barOrder + 2, crackMe);
@@ -40,14 +40,14 @@ function onCreatePost() {
 function onUpdatePost(elapsed) {
     if (customBar != null && scrool != null) {
 
-        var healthPercent = health / 2;
+        var healthPercent = this.health / 2;
         if (healthPercent > 1) healthPercent = 1;
         if (healthPercent < 0) healthPercent = 0;
 
 
-        if (dad != null && boyfriend != null) {
-            var dadC = dad.healthColorArray;
-            var bfC = boyfriend.healthColorArray;
+        if (this.dad != null && this.boyfriend != null) {
+            var dadC = this.dad.healthColorArray;
+            var bfC = this.boyfriend.healthColorArray;
 
             if (dadC != null && bfC != null) {
                 var r = Std.int(dadC[0] + (bfC[0] - dadC[0]) * healthPercent);
@@ -86,12 +86,12 @@ function onUpdatePost(elapsed) {
 
     
         if (crackMe != null) {
-            crackMe.visible = (health < 0.4);
+            crackMe.visible = (this.health < 0.4);
         }
 
-        if (iconP1 != null) {
-            iconP1.x = customBar.x + (barWidth / 2) - (iconP1.width / 2);
-            iconP1.y = customBar.y - iconP1.height + 15;
+        if (this.iconP1 != null) {
+            this.iconP1.x = customBar.x + (barWidth / 2) - (this.iconP1.width / 2);
+            this.iconP1.y = customBar.y - this.iconP1.height + 15;
         }
     }
 }
