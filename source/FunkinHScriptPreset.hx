@@ -78,6 +78,7 @@ class FunkinHScriptPreset
         script.set('Note', Note);
         script.set('NoteSplash', NoteSplash);
         script.set('StrumNote', StrumNote);
+        script.set('SustainHolds', SustainHolds);
         script.set('Alphabet', Alphabet);
         script.set('AttachedSprite', AttachedSprite);
         script.set('AttachedText', AttachedText);
