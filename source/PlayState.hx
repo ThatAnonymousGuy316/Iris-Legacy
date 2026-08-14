@@ -229,8 +229,8 @@ class PlayState extends MusicBeatState
 	public var health:Float = 1;
 	public var combo:Int = 0;
 
-	private var healthBarBG:AttachedSprite;
-	private var scoreBar:AttachedSprite;
+	public var healthBarBG:AttachedSprite;
+	public var scoreBar:AttachedSprite;
 
 	public var healthBar:FlxBar;
 
