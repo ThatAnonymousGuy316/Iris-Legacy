@@ -57,6 +57,7 @@ typedef StateObject = {
     var x:Float;
     var y:Float;
     var alpha:Float;
+    var scale:Float;
 }
 
 class CustomState extends MusicBeatState
@@ -137,7 +138,8 @@ class CustomState extends MusicBeatState
 
             sprite.alpha = object.alpha;
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
-
+            sprite.scale.x = object.scale;
+            sprite.scale.y = object.scale;
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
         }

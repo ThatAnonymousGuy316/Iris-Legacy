@@ -49,13 +49,17 @@ class CustomStateEditor extends MusicBeatState
 
     public var optionShit:Array<String> = [];
 
-    public var stateObjects:FlxTypedGroup<FlxBasic>;
+    public var stateObjects:FlxTypedGroup<FlxSprite>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
 
     var addObjectButton:FlxButton;
     var addObjectInputText:FlxUIInputText;
 
     var bg:FlxSprite;
+
+    var draggedObject:FlxSprite = null;
+    var itemDragOffsetX:Float = 0;
+	var itemDragOffsetY:Float = 0;
 
     override function create()
     {
@@ -83,7 +87,7 @@ class CustomStateEditor extends MusicBeatState
             add(bg);
         }
 
-        stateObjects = new FlxTypedGroup<FlxBasic>();
+        stateObjects = new FlxTypedGroup<FlxSprite>();
         add(stateObjects);
 
         for (object in daJson.objects)
@@ -102,10 +106,13 @@ class CustomStateEditor extends MusicBeatState
                 sprite.animation.play(object.animationPrefix);
             }
             else
-                sprite.loadGraphic(object.texture);
+                sprite.loadGraphic(Paths.image(object.texture));
 
             sprite.alpha = object.alpha;
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
+
+            sprite.scale.x = object.scale;
+            sprite.scale.y = object.scale;
 
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
@@ -125,8 +132,11 @@ class CustomStateEditor extends MusicBeatState
 			"Add Object",
 			function()
 			{
+                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0);
 			}
 		);
+        add(addObjectInputText);
+        add(addObjectButton);
     }
 
     override function update(elapsed:Float)
@@ -137,9 +147,40 @@ class CustomStateEditor extends MusicBeatState
 			FlxG.mouse.visible = false;
 			MusicBeatState.switchState(new editors.MasterEditorMenu());
 		}
+        handleMovingObjects(elapsed);
     }
 
-    public function createObject(name:String, texture:String, x:Float, y:Float, ?alpha:Float = 1, ?hasFrames:Bool = false, ?animationPrefix:String, ?animationFramerate:Int, ?animationLoops:Bool)
+    public function handleMovingObjects(elapsed:Float)
+    {
+        if (FlxG.mouse.justPressed)
+        {
+            for (object in stateObjects)
+            {
+                if (FlxG.mouse.overlaps(object))
+                {
+                    draggedObject = object;
+
+                    itemDragOffsetX = FlxG.mouse.x - object.x;
+                    itemDragOffsetY = FlxG.mouse.y - object.y;
+
+                    break;
+                }
+            }
+        }
+
+        if (FlxG.mouse.pressed && draggedObject != null)
+        {
+            draggedObject.x = FlxG.mouse.x - itemDragOffsetX;
+            draggedObject.y = FlxG.mouse.y - itemDragOffsetY;
+        }
+
+        if (FlxG.mouse.justReleased)
+        {
+            draggedObject = null;
+        }
+    }
+
+    public function createObject(name:String, texture:String, x:Float, y:Float, ?alpha:Float = 1, ?scale:Float = 1, ?hasFrames:Bool = false, ?animationPrefix:String, ?animationFramerate:Int, ?animationLoops:Bool)
     {
         var sprite:FlxSprite = new FlxSprite(x, y);
 
@@ -155,10 +196,13 @@ class CustomStateEditor extends MusicBeatState
             sprite.animation.play(animationPrefix);
         }
         else
-            sprite.loadGraphic(texture);
+            sprite.loadGraphic(Paths.image(texture));
 
         sprite.alpha = alpha;
         sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
+
+        sprite.scale.x = scale;
+        sprite.scale.y = scale;
 
         stateObjects.add(sprite);
         stateVariables.set(name, sprite);
@@ -207,10 +251,13 @@ class CustomStateEditor extends MusicBeatState
                 sprite.animation.play(object.animationPrefix);
             }
             else
-                sprite.loadGraphic(object.texture);
+                sprite.loadGraphic(Paths.image(object.texture));
 
             sprite.alpha = object.alpha;
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
+
+            sprite.scale.x = object.scale;
+            sprite.scale.y = object.scale;
 
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
