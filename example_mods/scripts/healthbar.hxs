@@ -1,0 +1,97 @@
+var customBar;
+var scrool;
+var crackMe;
+var scrollOffset = 0.0;
+
+function onCreatePost() {
+   
+    if (healthBar != null) healthBar.visible = false;
+    if (iconP2 != null) iconP2.visible = false;
+
+
+    customBar = new FlxSprite(100, 200);
+    customBar.loadGraphic(Paths.image('health/bar'));
+    customBar.cameras = [camHUD];
+
+
+    scrool = new FlxSprite(customBar.x, customBar.y);
+    scrool.loadGraphic(Paths.image('health/scrool'));
+    scrool.cameras = [camHUD];
+
+
+    crackMe = new FlxSprite(customBar.x, customBar.y);
+    crackMe.loadGraphic(Paths.image('health/crack_me'));
+    crackMe.cameras = [camHUD];
+    crackMe.visible = false; // Hidden by default
+
+
+    var barOrder = members.indexOf(healthBar);
+    if (barOrder != -1) {
+        insert(barOrder + 1, scrool);
+        insert(barOrder + 2, crackMe);
+        insert(barOrder + 3, customBar);
+    } else {
+        add(scrool);
+        add(crackMe);
+        add(customBar);
+    }
+}
+
+function onUpdatePost(elapsed) {
+    if (customBar != null && scrool != null) {
+
+        var healthPercent = health / 2;
+        if (healthPercent > 1) healthPercent = 1;
+        if (healthPercent < 0) healthPercent = 0;
+
+
+        if (dad != null && boyfriend != null) {
+            var dadC = dad.healthColorArray;
+            var bfC = boyfriend.healthColorArray;
+
+            if (dadC != null && bfC != null) {
+                var r = Std.int(dadC[0] + (bfC[0] - dadC[0]) * healthPercent);
+                var g = Std.int(dadC[1] + (bfC[1] - dadC[1]) * healthPercent);
+                var b = Std.int(dadC[2] + (bfC[2] - dadC[2]) * healthPercent);
+
+                scrool.color = (r << 16) | (g << 8) | b;
+            }
+        }
+
+       
+        scrollOffset += elapsed * 60;
+
+        var barHeight = customBar.height;
+        var barWidth = customBar.width;
+        var clipHeight = barHeight * healthPercent;
+
+        if (clipHeight > 0) {
+            scrool.visible = true;
+
+            var scrollMax = scrool.frameHeight - clipHeight;
+            var currentScroll = 0.0;
+
+            if (scrollMax > 0) {
+                currentScroll = scrollOffset % scrollMax;
+            }
+
+            scrool.clipRect = new FlxRect(0, currentScroll, scrool.frameWidth, clipHeight);
+
+
+            scrool.x = customBar.x;
+            scrool.y = customBar.y + barHeight - clipHeight - currentScroll;
+        } else {
+            scrool.visible = false;
+        }
+
+    
+        if (crackMe != null) {
+            crackMe.visible = (health < 0.4);
+        }
+
+        if (iconP1 != null) {
+            iconP1.x = customBar.x + (barWidth / 2) - (iconP1.width / 2);
+            iconP1.y = customBar.y - iconP1.height + 15;
+        }
+    }
+}

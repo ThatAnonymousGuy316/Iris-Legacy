@@ -56,6 +56,7 @@ class MainMenuEditor extends MusicBeatState
 	var redoStack:Array<MenuEditAction> = [];
 
     var allowMenuItemMove:FlxButton;
+	var resetBack:FlxButton;
     var allowBackgroundMove:FlxButton;
     var reloadImage:FlxButton;
     var backgroundText:FlxText;
@@ -281,7 +282,22 @@ class MainMenuEditor extends MusicBeatState
 
 				rebuildMenuItems();
 			}
+
+			
 		);
+
+		/*resetBack = new FlxButton(
+			resetBack.x + 210,
+			resetBack.y - 3,
+			"Reset Everything",
+			function()
+			{
+				openSubState(new ())
+			}
+
+			
+		  ); */
+
 
 		add(imageBackgroundInput);
 		add(reloadImage);
