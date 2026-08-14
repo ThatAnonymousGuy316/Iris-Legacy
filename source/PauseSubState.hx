@@ -218,7 +218,7 @@ class PauseSubState extends MusicBeatSubstate
 			{
 				case 'Gameplay Changers':
 					close();
-					openSubState(new GameplayChangersSubstate());
+					PlayState.instance.openChangersMenu();
 				case 'Options':
 					LoadingState.loadAndSwitchState(new options.OptionsState(true));
 				case 'Close Game':
