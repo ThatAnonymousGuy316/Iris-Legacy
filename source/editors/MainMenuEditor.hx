@@ -8,6 +8,8 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
 import flixel.addons.ui.FlxUICheckBox;
 import haxe.Json;
 import flixel.addons.display.FlxBackdrop;
@@ -16,6 +18,7 @@ using StringTools;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
+import sys.io.File;
 #end
 
 import MainMenuState;
@@ -55,14 +58,14 @@ class MainMenuEditor extends MusicBeatState
 	var undoStack:Array<MenuEditAction> = [];
 	var redoStack:Array<MenuEditAction> = [];
 
-    var allowMenuItemMove:FlxButton;
+	var allowMenuItemMove:FlxButton;
 	var resetBack:FlxButton;
-    var allowBackgroundMove:FlxButton;
-    var reloadImage:FlxButton;
-    var backgroundText:FlxText;
+	var allowBackgroundMove:FlxButton;
+	var reloadImage:FlxButton;
+	var backgroundText:FlxText;
 
-    var reloadImageFlash:FlxButton;
-    var backgroundTextFlash:FlxText;
+	var reloadImageFlash:FlxButton;
+	var backgroundTextFlash:FlxText;
 
 	var saveButton:FlxButton;
 	var undoButton:FlxButton;
@@ -70,11 +73,12 @@ class MainMenuEditor extends MusicBeatState
 
 	var changeVersion:FlxButton;
 	var versionText:FlxUIInputText;
-    var versionTextA:FlxText;
+	var versionTextA:FlxText;
 
 	var addObject:FlxButton;
 	var objectText:FlxUIInputText;
-    var objectTextA:FlxText;
+	var objectTextA:FlxText;
+
 	var editorPanelBG:FlxSprite;
 
 	var checkeredBg:FlxBackdrop;
@@ -82,6 +86,9 @@ class MainMenuEditor extends MusicBeatState
 
 	var objectCheckState:FlxUICheckBox;
 	public var doesObjectGoToState:Bool = true;
+
+	var autoSaveText:FlxText;
+	var autoSaveTimer:FlxTimer;
 
 	override public function create()
 	{
@@ -106,6 +113,7 @@ class MainMenuEditor extends MusicBeatState
 		add(bg);
 
 		var yScroll:Float = 0.25;
+
 		editorBG = new FlxSprite(-150, -150).makeGraphic(FlxG.width + 300, FlxG.height + 300, 0xFF808080);
 		editorBG.scrollFactor.set(0, yScroll);
 		editorBG.visible = false;
@@ -259,7 +267,6 @@ class MainMenuEditor extends MusicBeatState
 
 		objectCheckState = new FlxUICheckBox(10, objectText.y + 50, null, null, "Object Goes To A State?", 100);
 		objectCheckState.checked = doesObjectGoToState;
-
 		objectCheckState.callback = function()
 		{
 			doesObjectGoToState = objectCheckState.checked;
@@ -282,22 +289,19 @@ class MainMenuEditor extends MusicBeatState
 
 				rebuildMenuItems();
 			}
-
-			
 		);
 
-		/*resetBack = new FlxButton(
-			resetBack.x + 210,
-			resetBack.y - 3,
+		resetBack = new FlxButton(
+			objectText.x + 210,
+			objectText.y + 25,
 			"Reset Everything",
 			function()
 			{
-				openSubState(new ())
+				editorBG.visible = true;
+				checkeredBg.visible = true;
+				openSubState(new substates.ResetSubstate(this));
 			}
-
-			
-		  ); */
-
+		);
 
 		add(imageBackgroundInput);
 		add(reloadImage);
@@ -316,38 +320,53 @@ class MainMenuEditor extends MusicBeatState
 		add(objectText);
 		add(addObject);
 		add(objectCheckState);
+		add(resetBack);
 
 		backgroundText = new FlxText(
-            15,
-            imageBackgroundInput.y - 18,
-            0,
-            'Background image file name:'
-        );
+			15,
+			imageBackgroundInput.y - 18,
+			0,
+			'Background image file name:'
+		);
 		add(backgroundText);
 
 		backgroundTextFlash = new FlxText(
-            15,
-            imageBackgroundInputFlash.y - 18,
-            0,
-            'Background Flash image file name:'
-        );
+			15,
+			imageBackgroundInputFlash.y - 18,
+			0,
+			'Background Flash image file name:'
+		);
 		add(backgroundTextFlash);
 
 		versionTextA = new FlxText(
-            15,
-            versionText.y - 18,
-            0,
-            'Version:'
-        );
+			15,
+			versionText.y - 18,
+			0,
+			'Version:'
+		);
 		add(versionTextA);
 
 		objectTextA = new FlxText(
-            15,
-            objectText.y - 18,
-            0,
-            'Object Name:'
-        );
+			15,
+			objectText.y - 18,
+			0,
+			'Object Name:'
+		);
 		add(objectTextA);
+
+		// Autosave Text display (Bottom-Right)
+		autoSaveText = new FlxText(0, 0, 0, "Autosave!", 22);
+		autoSaveText.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		autoSaveText.x = FlxG.width - autoSaveText.width - 25;
+		autoSaveText.y = FlxG.height - autoSaveText.height - 25;
+		autoSaveText.alpha = 0;
+		autoSaveText.scrollFactor.set();
+		add(autoSaveText);
+
+		// Timer to trigger autosave every 60 seconds
+		autoSaveTimer = new FlxTimer().start(60, function(tmr:FlxTimer) {
+			triggerAutoSave();
+		}, 0);
 	}
 
 	function rebuildMenuItems()
@@ -362,7 +381,6 @@ class MainMenuEditor extends MusicBeatState
 
 			menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
 			menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
-
 			menuItem.animation.addByPrefix(
 				'idle',
 				optionShit[i] + " basic",
@@ -378,7 +396,6 @@ class MainMenuEditor extends MusicBeatState
 			menuItem.animation.play('idle');
 
 			var scroll:Float = (optionShit.length - 4) * 0.135;
-
 			if (optionShit.length < 6)
 				scroll = 0;
 
@@ -389,20 +406,50 @@ class MainMenuEditor extends MusicBeatState
 		}
 	}
 
-    public function saveJson()
-    {
-        var saveFolder:String = Sys.getCwd() + "/game/states/_override";
+	public function deleteAllContent()
+	{
+		if (menuItems != null)
+			menuItems.clear();
 
-        if (!FileSystem.exists(saveFolder))
-            FileSystem.createDirectory(saveFolder);
+		if (menuJson != null)
+			menuJson.options = [];
 
-        File.saveContent(
-            saveFolder + "/MainMenuState.json",
-            Json.stringify(menuJson, null, "\t")
-        );
+		optionShit = [];
+		undoStack = [];
+		redoStack = [];
 
-        trace("Saved JSON files to: " + saveFolder);
-    }
+		rebuildMenuItems();
+		triggerAutoSave();
+	}
+
+	public function triggerAutoSave()
+	{
+		saveJson();
+
+		if (autoSaveText != null)
+		{
+			autoSaveText.alpha = 0;
+			FlxTween.tween(autoSaveText, {alpha: 1}, 0.4, {
+				onComplete: function(twn:FlxTween) {
+					FlxTween.tween(autoSaveText, {alpha: 0}, 0.4, {startDelay: 1.2});
+				}
+			});
+		}
+	}
+
+	public function saveJson()
+	{
+		#if MODS_ALLOWED
+		var saveFolder:String = Sys.getCwd() + "/game/states/_override";
+		if (!FileSystem.exists(saveFolder))
+			FileSystem.createDirectory(saveFolder);
+		File.saveContent(
+			saveFolder + "/MainMenuState.json",
+			Json.stringify(menuJson, null, "\t")
+		);
+		trace("Saved JSON files to: " + saveFolder);
+		#end
+	}
 
 	override public function update(elapsed:Float)
 	{
@@ -430,7 +477,6 @@ class MainMenuEditor extends MusicBeatState
 				"- Ctrl+Z / Undo button to Undo deletion.\n" +
 				"- Ctrl+Y / Redo button to Redo deletion.\n" +
 				"- Don't forget to Save!";
-			
 			editorBG.visible = true;
 			checkeredBg.visible = true;
 			openSubState(new substates.HELPSubState());
@@ -459,6 +505,7 @@ class MainMenuEditor extends MusicBeatState
 			objectText.visible = panelVisible;
 			objectTextA.visible = panelVisible;
 			objectCheckState.visible = panelVisible;
+			resetBack.visible = panelVisible;
 		}
 	}
 
@@ -476,7 +523,6 @@ class MainMenuEditor extends MusicBeatState
 			for (i in 0...menuItems.members.length)
 			{
 				var item = menuItems.members[i];
-
 				if (item != null && FlxG.mouse.overlaps(item))
 				{
 					var opt = menuJson.options[i];
@@ -493,7 +539,6 @@ class MainMenuEditor extends MusicBeatState
 					menuItems.remove(item, true);
 					menuJson.options.splice(i, 1);
 					optionShit.splice(i, 1);
-
 					if (draggedItem == item)
 					{
 						draggingItem = false;
@@ -513,7 +558,6 @@ class MainMenuEditor extends MusicBeatState
 		{
 			var action = undoStack.pop();
 			redoStack.push(action);
-
 			var optData = {
 				name: action.name,
 				x: action.x,
@@ -568,7 +612,6 @@ class MainMenuEditor extends MusicBeatState
 	function handleUndoRedoShortcuts()
 	{
 		var controlPressed:Bool = FlxG.keys.pressed.CONTROL;
-
 		// Undo: Ctrl + Z
 		if (controlPressed && FlxG.keys.justPressed.Z)
 		{
@@ -627,7 +670,6 @@ class MainMenuEditor extends MusicBeatState
 				{
 					draggingItem = true;
 					draggedItem = item;
-
 					itemDragOffsetX = FlxG.mouse.x - item.x;
 					itemDragOffsetY = FlxG.mouse.y - item.y;
 
