@@ -36,10 +36,13 @@ function onCreatePost() {
 }
 
 function onUpdatePost(elapsed) {
-    scrollOffset += elapsed * 60;
+    if (customBar != null && scrool != null) {
+        if (this.boyfriend != null && this.boyfriend.healthColorArray != null && customBG != null) {
+            var bfC = this.boyfriend.healthColorArray;
+            customBG.color = (bfC[0] << 16) | (bfC[1] << 8) | bfC[2];
+        }
 
-    var barHeight = customBar.height;
-    var barWidth = customBar.width;
+        scrollOffset += elapsed * 60;
 
     if (this.iconP1 != null && customBG != null) {
         customBG.color = this.boyfriend.healthColorArray != null ? FlxColor.fromRGB(this.boyfriend.healthColorArray[0], this.boyfriend.healthColorArray[1], this.boyfriend.healthColorArray[2]) : this.iconP1.color;
