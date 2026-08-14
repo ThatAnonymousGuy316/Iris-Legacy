@@ -52,14 +52,13 @@ class CustomStateEditor extends MusicBeatState
     public var stateObjects:FlxTypedGroup<FlxSprite>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
 
-    var addObjectButton:FlxButton;
-    var addObjectInputText:FlxUIInputText;
-
     var bg:FlxSprite;
 
     var draggedObject:FlxSprite = null;
     var itemDragOffsetX:Float = 0;
 	var itemDragOffsetY:Float = 0;
+
+    var epicGroup:FlxSpriteGroup;
 
     override function create()
     {
@@ -90,6 +89,9 @@ class CustomStateEditor extends MusicBeatState
         stateObjects = new FlxTypedGroup<FlxSprite>();
         add(stateObjects);
 
+        epicGroup = new FlxSpriteGroup();
+        add(epicGroup);
+
         for (object in daJson.objects)
         {
             var sprite:FlxSprite = new FlxSprite(object.x, object.y);
@@ -118,7 +120,7 @@ class CustomStateEditor extends MusicBeatState
             stateVariables.set(object.name, sprite);
         }
 
-        addObjectInputText = new FlxUIInputText(
+        var addObjectInputText = new FlxUIInputText(
 			15,
 			30,
 			200,
@@ -126,17 +128,35 @@ class CustomStateEditor extends MusicBeatState
 			8
 		);
 
-		addObjectButton = new FlxButton(
+        var addObjectInputText2 = new FlxUIInputText(
+			15,
+			60,
+			200,
+			"1",
+			8
+		);
+
+        var addObjectInputText3 = new FlxUIInputText(
+			15,
+			90,
+			200,
+			"1",
+			8
+		);
+
+		var addObjectButton = new FlxButton(
 			addObjectInputText.x + 210,
 			addObjectInputText.y - 3,
 			"Add Object",
 			function()
 			{
-                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0);
+                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0, Std.parseFloat(addObjectInputText2.text), Std.parseFloat(addObjectInputText3.text));
 			}
 		);
-        add(addObjectInputText);
-        add(addObjectButton);
+        epicGroup.add(addObjectInputText);
+        epicGroup.add(addObjectInputText2);
+        epicGroup.add(addObjectInputText3);
+        epicGroup.add(addObjectButton);
     }
 
     override function update(elapsed:Float)
@@ -152,6 +172,42 @@ class CustomStateEditor extends MusicBeatState
 
     public function handleMovingObjects(elapsed:Float)
     {
+        if (FlxG.mouse.justPressedRight)
+        {
+            for (object in stateObjects)
+            {
+                if (FlxG.mouse.overlaps(object))
+                {
+                    stateObjects.remove(object, true);
+                    
+                    for (name => variable in stateVariables)
+                    {
+                        if (variable == object)
+                        {
+                            stateVariables.remove(name);
+                            break;
+                        }
+                    }
+                    
+                    for (i in 0...daJson.objects.length)
+                    {
+                        if (daJson.objects[i].name == null)
+                            continue;
+
+                        if (stateVariables.exists(daJson.objects[i].name) == false)
+                        {
+                            daJson.objects.splice(i, 1);
+                            break;
+                        }
+                    }
+
+                    if (draggedObject == object)
+                        draggedObject = null;
+
+                    break;
+                }
+            }
+        }
         if (FlxG.mouse.justPressed)
         {
             for (object in stateObjects)
