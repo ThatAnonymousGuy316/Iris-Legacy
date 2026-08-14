@@ -96,6 +96,7 @@ class FunkinHScriptPreset
         script.set('DialogueBox', DialogueBox);
         script.set('DialogueBoxPsych', DialogueBoxPsych);
         script.set('Option', options.Option);
+        script.set('ClientPrefs', ClientPrefs.data);
     }
 
     public function presetLegacy(script:Dynamic)

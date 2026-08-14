@@ -10,7 +10,7 @@ function onCreatePost() {
     if (this.iconP2 != null) this.iconP2.visible = false;
 
 
-    customBar = new FlxSprite(100, 200);
+    customBar = new FlxSprite(25, 350);
     customBar.loadGraphic(Paths.image('health/bar'));
     customBar.cameras = [this.camHUD];
 
@@ -27,17 +27,9 @@ function onCreatePost() {
 
     this.iconP1.flipX = true;
 
-
-    var barOrder = indexOf(this.healthBar);
-    if (barOrder != -1) {
-        insert(barOrder + 1, crackMe);
-        insert(barOrder + 2, scrool);
-        insert(barOrder + 3, customBar);
-    } else {
-        add(crackMe);
-        add(scrool);
-        add(customBar);
-    }
+    add(crackMe);
+    add(scrool);
+    add(customBar);
 }
 
 function onUpdatePost(elapsed) {
