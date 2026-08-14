@@ -5232,6 +5232,10 @@ class PlayState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('pluh'), ClientPrefs.data.hitsoundVolume);
 			else if (ClientPrefs.data.hitsoundType == 'Fart')
 				FlxG.sound.play(Paths.sound('perfect-fart'), ClientPrefs.data.hitsoundVolume);
+			else if (ClientPrefs.data.hitsoundType == 'Fuck!')
+				FlxG.sound.play(Paths.sound('fuck-sound-effect'), ClientPrefs.data.hitsoundVolume);
+			else if (ClientPrefs.data.hitsoundType == 'Yippie')
+				FlxG.sound.play(Paths.sound('yippe'), ClientPrefs.data.hitsoundVolume);
 			else
 				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
 		}
