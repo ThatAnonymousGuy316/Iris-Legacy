@@ -79,12 +79,13 @@ class CreditsState extends MusicBeatState
 
 		final defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 			['Iris Legacy Team'],
-			['Iris',                'iris',             'Director Of Iris Legacy Team',                                						'https://www.youtube.com/@QueenHenrietta-g5o', '7f61bc'],
-			['Osohatescash',        'oso',             'Co-Director Of Iris Legacy Team',         						'https://www.youtube.com/@bumassosolol',  '1f1105'],
-			['lildoctor809',             '809',             'Guy Who Did Nothing but be cool',                      						'https://www.youtube.com/@lildoctor809cos/featured'],
+			['Iris',                'iris',             'Director Of Iris Legacy Team',                                	'https://www.youtube.com/@QueenHenrietta-g5o', '7f61bc'],
+			['Osohatescash',        'oso',             	'Co-Director Of Iris Legacy Team',         						'https://www.youtube.com/@bumassosolol',  '1f1105'],
+			['lildoctor809',         '809',             'Guy Who Did Nothing but be cool',                      		'https://www.youtube.com/@lildoctor809cos/featured'],
 			['Big Boi',             'face',             'Freeplay Artworks',                      						'https://www.youtube.com/watch?v=s2699HTY-g8'],
+			['Bob el triste',       'face',             '"shits and giggles"',                      					'https://www.youtube.com/watch?v=OOBXmJRPO_s&pp=ygUdVGhhdCBmdWNraW5nIGJpcmQgdGhhdCBpIGhhdGU%3D'],
 			['vees boyf',           'boyf',             'Playtester and Made the engine big',      						'https://www.youtube.com/@B0YFR1END',     'ff0004'],
-			['vee',                 'vee',             'uhhh',                                    						'https://www.roblox.com/games/16116270224/Dandys-World','99cf91'],
+			['vee',                 'vee',             	'uhhh',                                    						'https://www.roblox.com/games/16116270224/Dandys-World','99cf91'],
 
 			['Psych Engine Team'],
 			['Shadow Mario',		'shadowmario',		'Main Programmer of Psych Engine',								 'https://ko-fi.com/shadowmario',		 '444444'],
