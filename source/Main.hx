@@ -12,7 +12,7 @@ import openfl.events.Event;
 import openfl.display.StageScaleMode;
 import hxwindowmode.WindowColorMode;
 
-//crash handler stuff
+// crash handler stuff
 #if CRASH_HANDLER
 import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
@@ -30,17 +30,15 @@ using StringTools;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	public static var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	var framerate:Int = 60; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	var gameWidth:Int = 1280;
+	var gameHeight:Int = 720;
+	public static var initialState:Class<FlxState> = TitleState;
+	var zoom:Float = -1;
+	var framerate:Int = 60;
+	var skipSplash:Bool = true;
+	var startFullscreen:Bool = false;
 
 	public static var fpsVar:FPSCounter;
-
-	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	static function main():Void
 	{
@@ -53,7 +51,6 @@ class Main extends Sprite
 
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
-
 		if (zoom == -1)
 		{
 			var ratioX:Float = stageWidth / gameWidth;
@@ -85,8 +82,19 @@ class Main extends Sprite
 		#end
 	}
 
-	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
-	// very cool person for real they don't get enough credit for their work
+	/**
+	 * Dynamic window color handler
+	 */
+	public static function setWindowTitleColor(color:Array<Int>):Void
+	{
+		#if windows
+		if (color != null && color.length >= 3)
+		{
+			WindowColorMode.setWindowBorderColor([color[0], color[1], color[2]], true, false);
+		}
+		#end
+	}
+
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
@@ -97,7 +105,6 @@ class Main extends Sprite
 
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
-
 		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
 
 		for (stackItem in callStack)
@@ -112,10 +119,7 @@ class Main extends Sprite
 		}
 
 		errMsg += "\nUncaught Error: " + e.error;
-		/*
-		 * remove if you're modding and want the crash log message to contain the link
-		 * please remember to actually modify the link for the github page to report the issues to.
-		*/
+
 		#if officialBuild
 		errMsg += "\nPlease report this error to the GitHub page: https://github.com/CrowPlexus-FNF/FNF-LegacyPsych\n\n> Crash Handler written by: sqirra-rng";
 		#else

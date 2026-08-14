@@ -1842,22 +1842,22 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	public function reloadHealthBarColors()
-	{
-		healthBar.createFilledBar(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]),
-			FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
-		
-		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6)
-		{
+	public function reloadHealthBarColors() {
+		healthBar.createFilledBar(FlxColor.fromRGB(dad.healthColorArray[0], dad.healthColorArray[1], dad.healthColorArray[2]), FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
+		if ((curStage == 'school' || curStage == 'schoolEvil') && ClientPrefs.data.shadersWeek6) {
 			healthBar.createFilledBar(
 				FlxColor.fromRGB(128, 128, 128),
 				FlxColor.WHITE
 			);
 		}
-
 		healthBar.updateBar();
-	}
 
+		// Set window border color to Boyfriend's icon color
+		if (boyfriend != null && boyfriend.healthColorArray != null)
+		{
+			Main.setWindowTitleColor(boyfriend.healthColorArray);
+		}
+	}
 	public function addCharacterToList(newCharacter:String, type:Int)
 	{
 		switch (type)
@@ -5583,9 +5583,12 @@ class PlayState extends MusicBeatState
 		}
 		FlxG.animationTimeScale = 1;
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
+
+		// Reset window border back to default purple when exiting gameplay
+		Main.setWindowTitleColor([0x62, 0x35, 0x81]);
+
 		super.destroy();
 	}
-
 	public static function cancelMusicFadeTween()
 	{
 		if (FlxG.sound.music.fadeTween != null)
