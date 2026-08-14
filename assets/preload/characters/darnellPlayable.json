@@ -1,0 +1,122 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "idle",
+			"fps": 24,
+			"name": "Idle",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Pose Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				-10
+			],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "Pose Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Pose Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				2
+			],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Pose Right",
+			"indices": []
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singRIGHT-hold",
+			"indices": [],
+			"name": "Left Flame Loop"
+		},
+		{
+			"offsets": [
+				0,
+				-10
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singDOWN-hold",
+			"indices": [],
+			"name": "Down Flame Loop"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singUP-hold",
+			"indices": [],
+			"name": "Up Flame Loop"
+		},
+		{
+			"offsets": [
+				0,
+				2
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singLEFT-hold",
+			"indices": [],
+			"name": "Right Flame Loop"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/darnellPlayable",
+	"position": [
+		-190,
+		200
+	],
+	"healthicon": "darnellPlayer",
+	"flip_x": false,
+	"healthbar_colors": [
+		115,
+		94,
+		176
+	],
+	"camera_position": [
+		-100,
+		-30
+	],
+	"sing_duration": 6.1,
+	"scale": 1
+}

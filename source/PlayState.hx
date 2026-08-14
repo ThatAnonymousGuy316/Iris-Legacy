@@ -1336,6 +1336,13 @@ class PlayState extends MusicBeatState
 		cornerMark.setPosition(FlxG.width - (cornerMark.width + 5), 5);
 		cornerMark.antialiasing = true;
 
+		var cornerMark2:FlxText = new FlxText(0, 0, 0, '${SONG.song} - ${CoolUtil.difficultyString()}');
+		cornerMark2.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE);
+		cornerMark2.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		uiGroup.add(cornerMark2);
+		cornerMark2.setPosition(5, 5);
+		cornerMark2.antialiasing = true;
+
 		healthBarBG = new AttachedSprite(healthBarJson.texture);
 		healthBarBG.x = healthBarJson.x;
 		healthBarBG.y = healthBarJson.y;
@@ -4709,7 +4716,7 @@ class PlayState extends MusicBeatState
 			var grayscale = new GrayscaleShader();
 			rating.shader = grayscale;
 		}
-		var score:Int = 350;
+		var score:Int = 500;
 
 		// tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
@@ -5108,7 +5115,7 @@ class PlayState extends MusicBeatState
 		songMisses++;
 		vocals.volume = 0;
 		if (!practiceMode)
-			songScore -= 10;
+			songScore -= 250;
 
 		totalPlayed++;
 		RecalculateRating(true);
@@ -5141,30 +5148,6 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.stunned)
 		{
 			health -= 0.05 * healthLoss;
-			if (instakillOnMiss)
-			{
-				vocals.volume = 0;
-				doDeathCheck(true);
-			}
-
-			if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
-
-			if (!practiceMode)
-				songScore -= 10;
-			if (!endingSong)
-			{
-				songMisses++;
-			}
-			totalPlayed++;
-			RecalculateRating(true);
-
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
 
 			if (boyfriend.hasMissAnimations)
 			{
@@ -5342,6 +5325,11 @@ class PlayState extends MusicBeatState
 			popUpScore(note);
 			health += note.hitHealth * healthGain;
 			invalidateNote(note);
+		}
+		else
+		{
+			songScore += 150;
+			updateScore(true);
 		}
 	}
 

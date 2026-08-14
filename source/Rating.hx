@@ -7,7 +7,7 @@ class Rating
 	public var counter:String = '';
 	public var hitWindow:Null<Int> = 0; //ms
 	public var ratingMod:Float = 1;
-	public var score:Int = 350;
+	public var score:Int = 500;
 	public var noteSplash:Bool = true;
 
 	public function new(name:String)
@@ -36,9 +36,9 @@ class Rating
 		bad.ratingMod = 0.4;
 		shit.ratingMod = 0;
 
-		good.score = 200;
-		bad.score = 100;
-		shit.score = 50;
+		good.score = 350;
+		bad.score = 300;
+		shit.score = 250;
 
 		good.noteSplash = false;
 		bad.noteSplash = false;
