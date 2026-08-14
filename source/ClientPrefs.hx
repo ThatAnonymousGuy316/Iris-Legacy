@@ -15,6 +15,7 @@ class SaveVariables {
 	public var missOnBad:Bool = false;
 	public var hitsoundType:String = 'Default';
 	public var playerSkin:String = 'default';
+	public var legacyChartingMenu:Bool = false;
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;

@@ -23,6 +23,8 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 
+import PlayState;
+
 using StringTools;
 
 class BaseOptionsMenu extends MusicBeatSubstate
@@ -36,6 +38,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 
 	private var boyfriend:Character = null;
+	private var skin:Character = null;
 	private var descBox:FlxSprite;
 	private var descText:FlxText;
 
@@ -115,6 +118,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			if(optionsArray[i].showBoyfriend && boyfriend == null)
 			{
 				reloadBoyfriend();
+			}
+			if(optionsArray[i].showSkin && skin == null)
+			{
+				reloadSkin();
 			}
 			updateTextFrom(optionsArray[i]);
 		}
@@ -205,6 +212,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 									curOption.curOption = num;
 									curOption.setValue(curOption.options[num]); //lol
+									if (skin != null)
+										reloadSkin();
 									//trace(curOption.options[num]);
 							}
 							updateTextFrom(curOption);
@@ -259,6 +268,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 		if(boyfriend != null && boyfriend.animation.curAnim.finished) {
 			boyfriend.dance();
+		}
+
+		if(skin != null && skin.animation.curAnim.finished) {
+			skin.dance();
 		}
 
 		if(nextAccept > 0) {
@@ -321,6 +334,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		{
 			boyfriend.visible = optionsArray[curSelected].showBoyfriend;
 		}
+		if(skin != null)
+		{
+			skin.visible = optionsArray[curSelected].showSkin;
+		}
 		curOption = optionsArray[curSelected]; //shorter lol
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
@@ -341,6 +358,69 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		boyfriend.dance();
 		insert(1, boyfriend);
 		boyfriend.visible = wasVisible;
+	}
+
+	public function reloadSkin()
+	{
+		var wasVisible:Bool = false;
+		if(skin != null) {
+			wasVisible = skin.visible;
+			skin.kill();
+			remove(skin);
+			skin.destroy();
+		}
+
+		var playerSkin = 'bf';
+		var daScale:Float = 1;
+
+		if (ClientPrefs.data.playerSkin == 'default')
+		{
+			playerSkin = 'bf';
+		}
+		else
+		{
+			var directories:Array<String> = [
+				Paths.getPreloadPath('skins/')
+			];
+
+			#if MODS_ALLOWED
+			directories.push(Paths.mods('skins/'));
+			directories.push(Paths.mods(Paths.currentModDirectory + '/skins/'));
+
+			for (mod in Paths.getGlobalMods())
+				directories.push(Paths.mods(mod + '/skins/'));
+			#end
+
+			for (directory in directories)
+			{
+				if (!sys.FileSystem.exists(directory))
+					continue;
+
+				for (file in sys.FileSystem.readDirectory(directory))
+				{
+					if (!file.toLowerCase().endsWith('.json'))
+						continue;
+
+					var skin:Skin = Json.parse(
+						sys.io.File.getContent(haxe.io.Path.join([directory, file]))
+					);
+
+					if (skin != null && ClientPrefs.data.playerSkin == skin.name)
+					{
+						playerSkin = skin.json;
+						daScale = skin.scale;
+					}
+				}
+			}
+		}
+		skin = new Character(840, 170, playerSkin, true);
+		skin.setGraphicSize(Std.int(skin.width * 0.75));
+		skin.scale.x = daScale;
+		skin.scale.y = daScale;
+		skin.updateHitbox();
+		skin.dance();
+		insert(1, skin);
+		skin.visible = wasVisible;
 	}
 
 	function reloadCheckboxes() {

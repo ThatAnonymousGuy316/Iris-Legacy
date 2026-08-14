@@ -69,13 +69,10 @@ import haxe.Json;
 
 using StringTools;
 
-typedef SkinArrayJson = {
-	var skins:Array<Skin>;
-}
-
 typedef Skin = {
 	var name:String;
 	var json:String;
+	var scale:Float;
 }
 
 typedef HealthBarJson = {
@@ -394,7 +391,6 @@ class PlayState extends MusicBeatState
 
 	var healthBarJson:HealthBarJson;
 	var scoreTxtJson:ScoreTxtStringJson;
-	var skinArray:SkinArrayJson;
 
 	public function openChangersMenu()
 	{
@@ -424,7 +420,6 @@ class PlayState extends MusicBeatState
 
 		scoreTxtJson = Json.parse(Paths.getTextFromFile('hud/ScoreText.json'));
 		healthBarJson = Json.parse(Paths.getTextFromFile('hud/HealthBar.json'));
-		skinArray = Json.parse(Paths.getTextFromFile('data/Skins.json'));
 
 		ratingStuff = [
 			[scoreTxtJson.ratings.data1, 0.2], // From 0% to 19%
@@ -1126,25 +1121,39 @@ class PlayState extends MusicBeatState
 
 		if (!stageData.isPixelStage)
 		{
-			if (ClientPrefs.data.playerSkin == 'minus')
-				playerSkin = 'BoyfriendMinus';
-			else if (ClientPrefs.data.playerSkin == 'minus 2')
-				playerSkin = 'BoyfriendMinus2';
-			else if (ClientPrefs.data.playerSkin == 'minus 3')
-				playerSkin = 'BoyfriendMinus3';
-			else if (ClientPrefs.data.playerSkin == 'pico')
-				playerSkin = 'pico-player';
-			else if (ClientPrefs.data.playerSkin == 'vee')
-				playerSkin = 'Vee';
-			else if (ClientPrefs.data.playerSkin == 'default')
-				playerSkin = SONG.player1;
-			else
+			if (ClientPrefs.data.playerSkin != 'default')
 			{
-				for (skin in skinArray.skins)
+				var directories:Array<String> = [
+					Paths.getPreloadPath('skins/')
+				];
+
+				#if MODS_ALLOWED
+				directories.push(Paths.mods('skins/'));
+				directories.push(Paths.mods(Paths.currentModDirectory + '/skins/'));
+
+				for (mod in Paths.getGlobalMods())
+					directories.push(Paths.mods(mod + '/skins/'));
+				#end
+
+				for (directory in directories)
 				{
-					if (ClientPrefs.data.playerSkin == skin.name)
+					if (!sys.FileSystem.exists(directory))
+						continue;
+
+					for (file in sys.FileSystem.readDirectory(directory))
 					{
-						playerSkin = skin.json;
+						if (!file.toLowerCase().endsWith('.json'))
+							continue;
+
+						var skin:Skin = Json.parse(
+							sys.io.File.getContent(haxe.io.Path.join([directory, file]))
+						);
+
+						if (skin != null && ClientPrefs.data.playerSkin == skin.name)
+						{
+							playerSkin = skin.json;
+							break;
+						}
 					}
 				}
 			}
@@ -1605,6 +1614,25 @@ class PlayState extends MusicBeatState
 		Paths.clearUnusedMemory();
 
 		CustomFadeTransition.nextCamera = camOther;
+	}
+
+	public function changeGameplayPrefs()
+	{
+		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype', 'multiplicative');
+
+		switch (songSpeedType)
+		{
+			case "multiplicative":
+				songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1);
+			case "constant":
+				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
+		}
 	}
 
 	public function runLua(file:String)
@@ -3203,6 +3231,8 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
+			changeGameplayPrefs();
+
 			if (FlxG.sound.music != null && !startingSong)
 			{
 				resyncVocals();
@@ -3847,7 +3877,7 @@ class PlayState extends MusicBeatState
 
 	function doDeathCheck(?skipHealthCheck:Bool = false)
 	{
-		if ((health <= 0) && !practiceMode && !isDead)
+		if (((skipHealthCheck && (instakillOnMiss || ClientPrefs.getGameplaySetting('instakillSick', false) || ClientPrefs.getGameplaySetting('instakill70Percent', false))) || health <= 0) && !practiceMode && !isDead)
 		{
 			var ret:Dynamic = callOnLuas('onGameOver', [], false);
 			if (ret != FunkinLua.Function_Stop)
@@ -4705,7 +4735,8 @@ class PlayState extends MusicBeatState
 			if (daRating.name == 'sick')
 			{
 				health = -641;
-				doDeathCheck(false);
+				vocals.volume = 0;
+				doDeathCheck(true);
 			}
 		}
 
@@ -5868,7 +5899,8 @@ class PlayState extends MusicBeatState
 			if (ratingPercent >= 0.72)
 			{
 				health = -641;
-				doDeathCheck(false);
+				vocals.volume = 0;
+				doDeathCheck(true);
 			}
 		}
 		setOnLuas('rating', ratingPercent);

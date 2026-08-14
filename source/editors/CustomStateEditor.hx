@@ -157,6 +157,9 @@ class CustomStateEditor extends MusicBeatState
         epicGroup.add(addObjectInputText2);
         epicGroup.add(addObjectInputText3);
         epicGroup.add(addObjectButton);
+        epicGroup.add(new FlxText(15,addObjectInputText.y - 16,0,'Name/Texture:'));
+        epicGroup.add(new FlxText(15,addObjectInputText2.y - 16,0,'Alpha:'));
+        epicGroup.add(new FlxText(15,addObjectInputText3.y - 16,0,'Scale:'));
     }
 
     override function update(elapsed:Float)

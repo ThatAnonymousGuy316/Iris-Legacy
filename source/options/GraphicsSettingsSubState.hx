@@ -75,22 +75,46 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		option.onChange = onChangeFramerate;
 		#end
 
-		var charArray = ['default', 'minus', 'minus 2', 'minus 3', 'pico', 'vee'];
-		var skinArray:SkinArrayJson = Json.parse(sys.io.File.getContent('assets/data/Skins.json'));
-		var skinArrayMods:SkinArrayJson = null;
-		if (sys.FileSystem.exists(Paths.modsJson('Skins')))
-			skinArrayMods = Json.parse(Paths.modsJson('Skins'));
+		var charArray = ['default'];
 
-		for (skin in skinArray.skins)
-		{
-			charArray.push(skin.name);
-		}
+		var skinDirectories:Array<String> = [
+			Paths.getPreloadPath('skins/')
+		];
 
-		if (skinArrayMods != null)
+		#if MODS_ALLOWED
+		skinDirectories.push(Paths.mods('skins/'));
+
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory != '')
+			skinDirectories.push(Paths.mods(Paths.currentModDirectory + '/skins/'));
+
+		for (mod in Paths.getGlobalMods())
+			skinDirectories.push(Paths.mods(mod + '/skins/'));
+		#end
+
+		for (directory in skinDirectories)
 		{
-			for (skinMod in skinArrayMods.skins)
+			if (!sys.FileSystem.exists(directory))
+				continue;
+
+			for (file in sys.FileSystem.readDirectory(directory))
 			{
-				charArray.push(skinMod.name);
+				if (!file.toLowerCase().endsWith('.json'))
+					continue;
+
+				var path = haxe.io.Path.join([directory, file]);
+
+				try
+				{
+					var skin:Skin = Json.parse(sys.io.File.getContent(path));
+
+					if (skin != null && skin.name != null)
+						charArray.push(skin.name);
+				}
+				catch (e:Dynamic)
+				{
+					trace('Failed to load skin: ' + path);
+					trace(e);
+				}
 			}
 		}
 
@@ -99,6 +123,7 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 			'playerSkin',
 			'string',
 			charArray);
+		option.showSkin = true;
 		addOption(option);
 
 		super();
