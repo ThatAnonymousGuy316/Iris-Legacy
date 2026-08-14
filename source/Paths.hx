@@ -52,7 +52,8 @@ class Paths
 		'hud',
 		'android',
 		'noteskins',
-		'menuButtons'
+		'menuButtons',
+		'skins'
 	];
 	#end
 
