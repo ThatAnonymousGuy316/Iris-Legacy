@@ -28,6 +28,8 @@ class FunkinHScript
         interp = new Interp();
         new FunkinHScriptPreset(this);
 		parser.allowTypes = true;
+        parser.allowJSON = true;
+        parser.allowMetadata = true;
         interp.execute(parser.parseString(File.getContent(filePath), filePath));
         call('onCreate', []);
     }
