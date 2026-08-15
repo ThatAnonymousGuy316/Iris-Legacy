@@ -369,23 +369,25 @@ class CustomStateEditor extends MusicBeatState
                     itemDragOffsetX = FlxG.mouse.x - object.x;
                     itemDragOffsetY = FlxG.mouse.y - object.y;
 
-                    for (data in daJson.objects)
+                    if (FlxG.keys.pressed.CONTROL)
                     {
-                        if (stateVariables.exists(data.name) && stateVariables.get(data.name) == object)
+                        for (data in daJson.objects)
                         {
-                            addObjectInputText.text = data.name;
-                            addObjectInputText2.text = Std.string(data.alpha);
-                            addObjectInputText3.text = Std.string(data.scale);
-                            addObjectInputText4.text = data.animationPrefix;
-                            addObjectInputText5.text = Std.string(data.animationFramerate);
+                            if (stateVariables.exists(data.name) && stateVariables.get(data.name) == object)
+                            {
+                                addObjectInputText.text = data.name;
+                                addObjectInputText2.text = Std.string(data.alpha);
+                                addObjectInputText3.text = Std.string(data.scale);
+                                addObjectInputText4.text = data.animationPrefix;
+                                addObjectInputText5.text = Std.string(data.animationFramerate);
 
-                            objecthasFramesCheck.checked = data.hasFrames;
-                            animationLoopCheck.checked = data.animationLoops;
+                                objecthasFramesCheck.checked = data.hasFrames;
+                                animationLoopCheck.checked = data.animationLoops;
 
-                            break;
+                                break;
+                            }
                         }
                     }
-
                     break;
                 }
             }
