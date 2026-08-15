@@ -10,7 +10,31 @@ function onUp() -- when you press up for ui
     
 end
 
+function onUpPost()
+    
+end
+
 function onDown() -- when you press down for ui
+    
+end
+
+function onDownPost()
+    
+end
+
+function onLeft() -- when you press left for ui
+    
+end
+
+function onLeftPost()
+    
+end
+
+function onRight() -- when your press right for ui
+    
+end
+
+function onRightPost()
     
 end
 

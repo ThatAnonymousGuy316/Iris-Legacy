@@ -154,6 +154,20 @@ class CustomState extends MusicBeatState
         if (controls.BACK)
             callScript('onBack', []);
 
+		if (controls.UI_LEFT_P)
+		{
+            callScript('onLeft', []);
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+            callScript('onLeftPost', []);
+		}
+
+		if (controls.UI_RIGHT_P)
+		{
+            callScript('onRight', []);
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+            callScript('onRightPost', []);
+		} 
+
 		if (controls.UI_UP_P)
 		{
             callScript('onUp', []);

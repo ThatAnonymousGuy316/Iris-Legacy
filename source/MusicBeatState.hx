@@ -34,18 +34,24 @@ class MusicBeatState extends modcharting.ModchartMusicBeatState
 
 	function setupWelcomeMusic()
 	{
-		this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop'));
-		this.welcomeMusic.play();
-		FlxG.sound.list.add(this.welcomeMusic);
-		this.welcomeMusic.looped = true;
+		if (ClientPrefs.data.editorMusic)
+		{
+			this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop'));
+			this.welcomeMusic.play();
+			FlxG.sound.list.add(this.welcomeMusic);
+			this.welcomeMusic.looped = true;
+		}
 	}
 
 	override function destroy()
 	{
 		super.destroy();
-		this.welcomeMusic.stop();
-		this.welcomeMusic.looped = false;
-		FlxG.sound.list.remove(this.welcomeMusic);
+		if (ClientPrefs.data.editorMusic)
+		{
+			this.welcomeMusic.stop();
+			this.welcomeMusic.looped = false;
+			FlxG.sound.list.remove(this.welcomeMusic);
+		}
 	}
 
 	inline function get_controls():Controls

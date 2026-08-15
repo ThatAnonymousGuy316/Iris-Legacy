@@ -18,6 +18,7 @@ class SaveVariables {
 	public var legacyChartingMenu:Bool = false;
 	public var noteUnderlay:Bool = false;
 	public var newHealthbar:Bool = true;
+	public var editorMusic:Bool = true;
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
