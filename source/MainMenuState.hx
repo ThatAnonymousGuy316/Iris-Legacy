@@ -44,7 +44,11 @@ typedef OptionDataJson = {
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = ''; //This is also used for Discord RPC
+	#if ENABLE_ONLINE
+	public static var irisLegacyVersion:String = '2.1-ONLINE';
+	#else
 	public static var irisLegacyVersion:String = '2.1';
+	#end
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;

@@ -66,12 +66,6 @@ class HudEditor extends MusicBeatState
 	var dragOffsetX:Float = 0;
 	var dragOffsetY:Float = 0;
 
-	var textureInput:FlxUIInputText;
-	var fontInput:FlxUIInputText;
-	var textInput:FlxUIInputText;
-	var scaleInput:FlxUIInputText;
-	var alphaInput:FlxUIInputText;
-
     var uiVisible:Bool = true;
 
     var editorUI:FlxTypedGroup<FlxBasic>;
@@ -90,9 +84,7 @@ class HudEditor extends MusicBeatState
 		createHUD();
         editorUI = new FlxTypedGroup<FlxBasic>();
 	    add(editorUI);
-		createEditorUI();
-
-		selectObject("health");
+		createUIStuffs();
 	}
 
 	function createHUD()
@@ -186,294 +178,32 @@ class HudEditor extends MusicBeatState
 		add(scoreTxt);
 	}
 
-	function createEditorUI()
+	function createUIStuffs()
 	{
-		editorPanel = new FlxSprite(0, 0);
-		editorPanel.makeGraphic(
-			300,
-			FlxG.height,
-			FlxColor.fromRGB(25, 25, 25)
-		);
-
-		editorPanel.scrollFactor.set();
-
-		var title = new FlxText(
+		var toggleScoreBar = new FlxButton(
 			15,
-			15,
-			270,
-			"HUD EDITOR",
-			24
-		);
-
-		title.color = FlxColor.WHITE;
-		selectedText = new FlxText(
-			15,
-			55,
-			270,
-			"Selected: None",
-			16
-		);
-
-		selectedText.color = FlxColor.WHITE;
-
-		var healthButton = new FlxButton(
-			15,
-			90,
-			"Health Bar",
+			30,
+			"Toggle SB",
 			function()
 			{
-				selectObject("health");
+				scoreBar.visible = !scoreBar.visible;
+				daJsonScore.enableScoreBar = scoreBar.visible;
 			}
-		);
-
-		healthButton.width = 270;
-		healthButton.height = 35;
-
-		var scoreBarButton = new FlxButton(
-			15,
-			135,
-			"Score Bar",
-			function()
-			{
-				selectObject("scoreBar");
-			}
-		);
-
-		scoreBarButton.width = 270;
-		scoreBarButton.height = 35;
-
-		var scoreTextButton = new FlxButton(
-			15,
-			180,
-			"Score Text",
-			function()
-			{
-				selectObject("scoreText");
-			}
-		);
-
-		scoreTextButton.width = 270;
-		scoreTextButton.height = 35;
-
-		textureInput = createInput(
-			"Texture",
-			15,
-			245
-		);
-
-		fontInput = createInput(
-			"Font",
-			15,
-			305
-		);
-
-		textInput = createInput(
-			"daText",
-			15,
-			365
-		);
-
-		scaleInput = createInput(
-			"Scale",
-			15,
-			425
-		);
-
-		alphaInput = createInput(
-			"Alpha",
-			15,
-			485
 		);
 
 		var saveButton = new FlxButton(
-			15,
-			550,
-			"SAVE",
+			toggleScoreBar.x,
+			toggleScoreBar.y + 50,
+			"Save",
 			function()
 			{
 				saveJson();
 			}
 		);
 
-		saveButton.width = 270;
-		saveButton.height = 40;
-
-        editorUI.add(editorPanel);
-        editorUI.add(title);
-        editorUI.add(selectedText);
-        editorUI.add(healthButton);
-        editorUI.add(scoreBarButton);
-        editorUI.add(scoreTextButton);
-        editorUI.add(saveButton);
+		editorUI.add(toggleScoreBar);
+		editorUI.add(saveButton);
 	}
-
-	function createInput(
-		label:String,
-		x:Float,
-		y:Float
-	):FlxUIInputText
-	{
-		var labelText = new FlxText(
-			x,
-			y - 20,
-			270,
-			label,
-			14
-		);
-
-		labelText.color = FlxColor.GRAY;
-
-		add(labelText);
-
-		var input = new FlxUIInputText(
-			x,
-			y,
-			270,
-			"",
-			14
-		);
-
-		input.callback = function(
-			action:String,
-			value:String
-		)
-		{
-			updateProperties();
-		};
-
-		add(input);
-
-		return input;
-	}
-
-	function selectObject(object:String)
-	{
-		selected = object;
-
-		switch (object)
-		{
-			case "health":
-				selectedObject = healthBarBG;
-
-				textureInput.text = daJsonHealth.texture;
-
-				fontInput.text = "";
-				textInput.text = "";
-				scaleInput.text = "";
-				alphaInput.text = "";
-
-			case "scoreBar":
-				selectedObject = scoreBar;
-
-				textureInput.text = daJsonScore.scoreBarTexture;
-
-				fontInput.text = "";
-				textInput.text = "";
-
-				scaleInput.text =
-					Std.string(daJsonScore.scoreBarScale);
-
-				alphaInput.text =
-					Std.string(daJsonScore.scoreBarAlpha);
-
-			case "scoreText":
-				selectedObject = scoreTxt;
-
-				textureInput.text = "";
-
-				fontInput.text = daJsonScore.font;
-				textInput.text = daJsonScore.daText;
-
-				scaleInput.text =
-					Std.string(scoreTxt.scale.x);
-
-				alphaInput.text = "";
-		}
-
-		selectedText.text = "Selected: " + object;
-	}
-
-    function updateProperties()
-    {
-        if (selectedObject == null)
-            return;
-
-        switch (selected)
-        {
-            case "health":
-                if (textureInput.text != daJsonHealth.texture)
-                {
-                    daJsonHealth.texture = textureInput.text;
-
-                    healthBarBG.loadGraphic(
-                        Paths.image(daJsonHealth.texture)
-                    );
-
-                    healthBar.x = healthBarBG.x + 4;
-                    healthBar.y = healthBarBG.y + 4;
-                }
-
-            case "scoreBar":
-                if (textureInput.text != daJsonScore.scoreBarTexture)
-                {
-                    daJsonScore.scoreBarTexture = textureInput.text;
-
-                    scoreBar.loadGraphic(
-                        Paths.image(daJsonScore.scoreBarTexture)
-                    );
-                }
-
-                var scale:Float = Std.parseFloat(scaleInput.text);
-
-                if (!Math.isNaN(scale))
-                {
-                    daJsonScore.scoreBarScale = scale;
-
-                    scoreBar.scale.set(
-                        scale,
-                        scale
-                    );
-                }
-
-                var alpha:Float = Std.parseFloat(alphaInput.text);
-
-                if (!Math.isNaN(alpha))
-                {
-                    daJsonScore.scoreBarAlpha = alpha;
-                    scoreBar.alpha = alpha;
-                }
-
-            case "scoreText":
-                if (fontInput.text != daJsonScore.font)
-                {
-                    daJsonScore.font = fontInput.text;
-
-                    scoreTxt.setFormat(
-                        Paths.font(daJsonScore.font),
-                        20,
-                        FlxColor.WHITE,
-                        CENTER,
-                        FlxTextBorderStyle.OUTLINE,
-                        FlxColor.BLACK
-                    );
-
-                    scoreTxt.borderSize = 1.25;
-                }
-
-                daJsonScore.daText = textInput.text;
-                scoreTxt.text = daJsonScore.daText;
-
-                var textScale:Float = Std.parseFloat(scaleInput.text);
-
-                if (!Math.isNaN(textScale))
-                {
-                    scoreTxt.scale.set(
-                        textScale,
-                        textScale
-                    );
-                }
-        }
-    }
 
 	override function update(elapsed:Float)
 	{
@@ -482,44 +212,8 @@ class HudEditor extends MusicBeatState
         if (FlxG.keys.justPressed.F1)
         {
             uiVisible = !uiVisible;
-            editorUI.visible = uiVisible;
+			editorUI.visible = uiVisible;
         }
-
-		if (selectedObject != null)
-		{
-			if (
-				FlxG.mouse.justPressed &&
-				FlxG.mouse.overlaps(selectedObject)
-			)
-			{
-				dragging = true;
-
-				dragOffsetX =
-					FlxG.mouse.x - selectedObject.x;
-
-				dragOffsetY =
-					FlxG.mouse.y - selectedObject.y;
-			}
-
-			if (dragging)
-			{
-				if (FlxG.mouse.pressed)
-				{
-					selectedObject.x =
-						FlxG.mouse.x - dragOffsetX;
-
-					selectedObject.y =
-						FlxG.mouse.y - dragOffsetY;
-
-					updatePosition();
-				}
-				else
-				{
-					dragging = false;
-				}
-			}
-		}
-
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
 			FlxG.mouse.visible = false;
@@ -528,70 +222,101 @@ class HudEditor extends MusicBeatState
 				new editors.MasterEditorMenu()
 			);
 		}
-	}
 
-	function updatePosition()
-	{
-		switch (selected)
+		if (FlxG.mouse.justPressedRight)
 		{
-			case "health":
-				daJsonHealth.x =
-					healthBarBG.x -
-					daJsonHealth.xPlus;
+			var mouseX:Float = FlxG.mouse.x;
+			var mouseY:Float = FlxG.mouse.y;
 
-				daJsonHealth.y =
-					healthBarBG.y -
-					daJsonHealth.yPlus;
+			selectedObject = null;
+			selected = "";
+			if (scoreTxt.visible &&
+				mouseX >= scoreTxt.x &&
+				mouseX <= scoreTxt.x + scoreTxt.width &&
+				mouseY >= scoreTxt.y &&
+				mouseY <= scoreTxt.y + scoreTxt.height)
+			{
+				selectedObject = scoreTxt;
+				selected = "scoreTxt";
+			}
+			else if (scoreBar.visible &&
+				mouseX >= scoreBar.x &&
+				mouseX <= scoreBar.x + scoreBar.width &&
+				mouseY >= scoreBar.y &&
+				mouseY <= scoreBar.y + scoreBar.height)
+			{
+				selectedObject = scoreBar;
+				selected = "scoreBar";
+			}
+			else if (
+				(healthBarBG.visible &&
+				mouseX >= healthBarBG.x &&
+				mouseX <= healthBarBG.x + healthBarBG.width &&
+				mouseY >= healthBarBG.y &&
+				mouseY <= healthBarBG.y + healthBarBG.height)
+				||
+				(healthBar.visible &&
+				mouseX >= healthBar.x &&
+				mouseX <= healthBar.x + healthBar.width &&
+				mouseY >= healthBar.y &&
+				mouseY <= healthBar.y + healthBar.height)
+			)
+			{
+				selectedObject = healthBarBG;
+				selected = "healthBar";
+			}
+			if (selectedObject != null)
+			{
+				dragOffsetX = FlxG.mouse.x - selectedObject.x;
+				dragOffsetY = FlxG.mouse.y - selectedObject.y;
+			}
+		}
+		if (FlxG.mouse.justPressed && selectedObject != null)
+		{
+			dragging = true;
 
-				if (ClientPrefs.data.downScroll)
-				{
-					daJsonHealth.yDownscroll =
-						healthBarBG.y -
-						daJsonHealth.yPlus;
-				}
+			dragOffsetX = FlxG.mouse.x - selectedObject.x;
+			dragOffsetY = FlxG.mouse.y - selectedObject.y;
+		}
+		if (dragging && FlxG.mouse.pressed && selectedObject != null)
+		{
+			var newX:Float = FlxG.mouse.x - dragOffsetX;
+			var newY:Float = FlxG.mouse.y - dragOffsetY;
 
-				healthBar.x =
-					healthBarBG.x + 4;
+			if (selected == "healthBar")
+			{
+				var deltaX:Float = newX - healthBarBG.x;
+				var deltaY:Float = newY - healthBarBG.y;
 
-				healthBar.y =
-					healthBarBG.y + 4;
+				healthBarBG.x += deltaX;
+				healthBarBG.y += deltaY;
 
-			case "scoreBar":
-				daJsonScore.scoreBarX =
-					scoreBar.x -
-					daJsonScore.scoreBarXPlus;
-
-				daJsonScore.scoreBarY =
-					scoreBar.y -
-					daJsonScore.scoreBarYPlus;
-
-				if (ClientPrefs.data.downScroll)
-				{
-					daJsonScore.scoreBarYDownscroll =
-						scoreBar.y -
-						daJsonScore.scoreBarYPlus;
-				}
-
-			case "scoreText":
-				daJsonScore.x =
-					scoreTxt.x -
-					daJsonScore.xPlus;
-
-				daJsonScore.y =
-					scoreTxt.y -
-					daJsonScore.yPlus;
-
-				if (ClientPrefs.data.downScroll)
-				{
-					daJsonScore.yDownscroll =
-						scoreTxt.y -
-						daJsonScore.yPlus;
-				}
+				healthBar.x += deltaX;
+				healthBar.y += deltaY;
+			}
+			else
+			{
+				selectedObject.x = newX;
+				selectedObject.y = newY;
+			}
+		}
+		if (FlxG.mouse.justReleased)
+		{
+			dragging = false;
 		}
 	}
 
 	public function saveJson()
 	{
+		daJsonHealth.x = healthBarBG.x - daJsonHealth.xPlus;
+		daJsonHealth.y = healthBarBG.y - daJsonHealth.yPlus;
+
+		daJsonScore.x = scoreTxt.x - daJsonScore.xPlus;
+		daJsonScore.y = scoreTxt.y - daJsonScore.yPlus;
+
+		daJsonScore.scoreBarX = scoreBar.x - daJsonScore.scoreBarXPlus;
+		daJsonScore.scoreBarY = scoreBar.y - daJsonScore.scoreBarYPlus;
+
 		var saveFolder:String =
 			Sys.getCwd() + "/game/hud";
 

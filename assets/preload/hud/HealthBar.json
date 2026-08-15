@@ -1,10 +1,10 @@
 {
-    "texture": "timeBar",
-    "yDownscroll": 70,
-    "x": 80,
-    "y": 650,
-    "xPlus": 0,
-    "yPlus": 0,
-    "barWidth": 8,
-    "barHeight": 8
+	"x": 433,
+	"yDownscroll": 70,
+	"y": 641,
+	"barHeight": 8,
+	"xPlus": 0,
+	"barWidth": 8,
+	"yPlus": 0,
+	"texture": "timeBar"
 }
