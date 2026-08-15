@@ -134,7 +134,7 @@ class CustomState extends MusicBeatState
                 sprite.animation.play(object.animationPrefix);
             }
             else
-                sprite.loadGraphic(object.texture);
+                sprite.loadGraphic(Paths.image(object.texture));
 
             sprite.alpha = object.alpha;
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;

@@ -53,7 +53,8 @@ class Paths
 		'android',
 		'noteskins',
 		'menuButtons',
-		'skins'
+		'skins',
+		'options'
 	];
 	#end
 

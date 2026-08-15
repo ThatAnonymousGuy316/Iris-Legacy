@@ -12,7 +12,7 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.util.FlxAxes;
 
 
-class ResetSubstate extends FlxSubState
+class ResetSubState extends FlxSubState
 {
 	var parentEditor:MainMenuEditor;
 	var bgMask:FlxSprite;

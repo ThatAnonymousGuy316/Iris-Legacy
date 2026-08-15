@@ -119,6 +119,18 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 		#end
 
+		var option:Option = new Option('Notes Underlay',
+			'TEMP',
+			'noteUnderlay',
+			'bool');
+		addOption(option);
+
+		var option:Option = new Option('New HealthBar',
+			'TEMP',
+			'newHealthbar',
+			'bool');
+		addOption(option);
+
 		super();
 	}
 

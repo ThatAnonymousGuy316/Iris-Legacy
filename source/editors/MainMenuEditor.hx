@@ -299,7 +299,7 @@ class MainMenuEditor extends MusicBeatState
 			{
 				editorBG.visible = true;
 				checkeredBg.visible = true;
-				openSubState(new substates.ResetSubstate(this));
+				openSubState(new substates.ResetSubState(this));
 			}
 		);
 

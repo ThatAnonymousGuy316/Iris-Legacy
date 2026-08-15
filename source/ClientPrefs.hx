@@ -16,6 +16,8 @@ class SaveVariables {
 	public var hitsoundType:String = 'Default';
 	public var playerSkin:String = 'default';
 	public var legacyChartingMenu:Bool = false;
+	public var noteUnderlay:Bool = false;
+	public var newHealthbar:Bool = true;
 	// -- GAMEPLAY OPTIONS -- //
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;

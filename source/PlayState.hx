@@ -1449,6 +1449,8 @@ class PlayState extends MusicBeatState
 		eventPushedMap.clear();
 		eventPushedMap = null;
 
+		setSoftcodedOptions();
+
 		// SONG SPECIFIC SCRIPTS
 		#if LUA_ALLOWED
 		var filesPushed:Array<String> = [];
@@ -1640,6 +1642,14 @@ class PlayState extends MusicBeatState
 				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
 		}
 		botplayTxt.visible = cpuControlled;
+	}
+
+	public function setSoftcodedOptions()
+	{
+		if (ClientPrefs.data.noteUnderlay)
+			runLua('options/noteunderlay');
+		if (ClientPrefs.data.newHealthbar)
+			runHX('options/healthbar');
 	}
 
 	public function runLua(file:String)

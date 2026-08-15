@@ -60,6 +60,17 @@ class CustomStateEditor extends MusicBeatState
 
     var epicGroup:FlxSpriteGroup;
 
+    var selectedObject:FlxSprite = null;
+
+    var addObjectInputText:FlxUIInputText;
+    var addObjectInputText2:FlxUIInputText;
+    var addObjectInputText3:FlxUIInputText;
+    var addObjectInputText4:FlxUIInputText;
+    var addObjectInputText5:FlxUIInputText;
+
+    var objecthasFramesCheck:FlxUICheckBox;
+    var animationLoopCheck:FlxUICheckBox;
+
     override function create()
     {
         super.create();
@@ -118,9 +129,22 @@ class CustomStateEditor extends MusicBeatState
 
             stateObjects.add(sprite);
             stateVariables.set(object.name, sprite);
+
+            daJson.objects.push({
+                name: object.name,
+                hasFrames: object.hasFrames,
+                animationPrefix: object.animationPrefix,
+                animationLoops: object.animationLoops,
+                animationFramerate: object.animationFramerate,
+                texture: object.texture,
+                x: object.x,
+                y: object.y,
+                alpha: object.alpha,
+                scale: object.scale
+            });
         }
 
-        var addObjectInputText = new FlxUIInputText(
+        addObjectInputText = new FlxUIInputText(
 			15,
 			30,
 			200,
@@ -128,24 +152,63 @@ class CustomStateEditor extends MusicBeatState
 			8
 		);
 
-        var addObjectInputText2 = new FlxUIInputText(
+        addObjectInputText2 = new FlxUIInputText(
+            15,
+            60,
+            200,
+            "1",
+            8
+        );
+
+        addObjectInputText3 = new FlxUIInputText(
+            15,
+            90,
+            200,
+            "1",
+            8
+        );
+
+        addObjectInputText4 = new FlxUIInputText(
+            15,
+            120,
+            200,
+            "",
+            8
+        );
+
+        addObjectInputText5 = new FlxUIInputText(
+            15,
+            150,
+            200,
+            "24",
+            8
+        );
+
+        var stateNameText = new FlxUIInputText(
 			15,
-			60,
+			180,
 			200,
-			"1",
+			"",
 			8
 		);
 
-        var addObjectInputText3 = new FlxUIInputText(
-			15,
-			90,
-			200,
-			"1",
-			8
-		);
+        objecthasFramesCheck = new FlxUICheckBox(
+            10 + 70,
+            addObjectInputText3.y + 50,
+            null,
+            null,
+            "Object Has Frames?",
+            100
+        );
 
-		var objecthasFramesCheck = new FlxUICheckBox(10, objectText.y + 50, null, null, "Object Has Frames?", 100);
-		objecthasFramesCheck.checked = false;
+        animationLoopCheck = new FlxUICheckBox(
+            10 + 70,
+            objecthasFramesCheck.y + 50,
+            null,
+            null,
+            "Animation Loops?",
+            100
+        );
 
 		var addObjectButton = new FlxButton(
 			addObjectInputText.x + 210,
@@ -153,17 +216,62 @@ class CustomStateEditor extends MusicBeatState
 			"Add Object",
 			function()
 			{
-                createObject(addObjectInputText.text, addObjectInputText.text, 0, 0, Std.parseFloat(addObjectInputText2.text), Std.parseFloat(addObjectInputText3.text), objecthasFramesCheck.checked);
+                createObject(addObjectInputText.text, 
+                    addObjectInputText.text, 0, 0, 
+                    Std.parseFloat(addObjectInputText2.text), 
+                    Std.parseFloat(addObjectInputText3.text), 
+                    objecthasFramesCheck.checked, 
+                    addObjectInputText4.text,
+                    Std.parseInt(addObjectInputText5.text),
+                    animationLoopCheck.checked
+                );
 			}
 		);
+
+		var saveButton = new FlxButton(
+			addObjectButton.x + 100,
+			addObjectButton.y,
+			"Save",
+			function()
+			{
+                saveJson(stateNameText.text);
+			}
+		);
+
+		var loadButton = new FlxButton(
+			saveButton.x + 100,
+			saveButton.y,
+			"load",
+			function()
+			{
+                load(stateNameText.text);
+			}
+		);
+        objecthasFramesCheck.x = addObjectButton.x;
+        objecthasFramesCheck.y = addObjectInputText.y + 20;
+		objecthasFramesCheck.checked = false;
+
+        animationLoopCheck.x = addObjectButton.x;
+        animationLoopCheck.y = objecthasFramesCheck.y + 20;
+		animationLoopCheck.checked = false;
+
         epicGroup.add(addObjectInputText);
         epicGroup.add(addObjectInputText2);
         epicGroup.add(addObjectInputText3);
+        epicGroup.add(addObjectInputText4);
+        epicGroup.add(addObjectInputText5);
+        epicGroup.add(stateNameText);
         epicGroup.add(objecthasFramesCheck);
+        epicGroup.add(animationLoopCheck);
         epicGroup.add(addObjectButton);
+        epicGroup.add(saveButton);
+        epicGroup.add(loadButton);
         epicGroup.add(new FlxText(15,addObjectInputText.y - 16,0,'Name/Texture:'));
         epicGroup.add(new FlxText(15,addObjectInputText2.y - 16,0,'Alpha:'));
         epicGroup.add(new FlxText(15,addObjectInputText3.y - 16,0,'Scale:'));
+        epicGroup.add(new FlxText(15,addObjectInputText4.y - 16,0,'Animation Prefix/Name:'));
+        epicGroup.add(new FlxText(15,addObjectInputText5.y - 16,0,'Animation Framerate:'));
+        epicGroup.add(new FlxText(15,stateNameText.y - 16,0,'State Name (For Saving and Loading):'));
     }
 
     override function update(elapsed:Float)
@@ -221,10 +329,29 @@ class CustomStateEditor extends MusicBeatState
             {
                 if (FlxG.mouse.overlaps(object))
                 {
+                    selectedObject = object;
+
                     draggedObject = object;
 
                     itemDragOffsetX = FlxG.mouse.x - object.x;
                     itemDragOffsetY = FlxG.mouse.y - object.y;
+
+                    for (data in daJson.objects)
+                    {
+                        if (stateVariables.exists(data.name) && stateVariables.get(data.name) == object)
+                        {
+                            addObjectInputText.text = data.name;
+                            addObjectInputText2.text = Std.string(data.alpha);
+                            addObjectInputText3.text = Std.string(data.scale);
+                            addObjectInputText4.text = data.animationPrefix;
+                            addObjectInputText5.text = Std.string(data.animationFramerate);
+
+                            objecthasFramesCheck.checked = data.hasFrames;
+                            animationLoopCheck.checked = data.animationLoops;
+
+                            break;
+                        }
+                    }
 
                     break;
                 }
@@ -235,6 +362,16 @@ class CustomStateEditor extends MusicBeatState
         {
             draggedObject.x = FlxG.mouse.x - itemDragOffsetX;
             draggedObject.y = FlxG.mouse.y - itemDragOffsetY;
+
+            for (i in 0...daJson.objects.length)
+            {
+                if (stateVariables.exists(daJson.objects[i].name) && stateVariables.get(daJson.objects[i].name) == draggedObject)
+                {
+                    daJson.objects[i].x = draggedObject.x;
+                    daJson.objects[i].y = draggedObject.y;
+                    break;
+                }
+            }
         }
 
         if (FlxG.mouse.justReleased)
@@ -269,6 +406,19 @@ class CustomStateEditor extends MusicBeatState
 
         stateObjects.add(sprite);
         stateVariables.set(name, sprite);
+
+        daJson.objects.push({
+            name: name,
+            hasFrames: hasFrames,
+            animationPrefix: animationPrefix,
+            animationLoops: animationLoops,
+            animationFramerate: animationFramerate,
+            texture: texture,
+            x: x,
+            y: y,
+            alpha: alpha,
+            scale: scale
+        });
     }
     
     public function saveJson(stateName:String)
@@ -287,17 +437,41 @@ class CustomStateEditor extends MusicBeatState
 
     public function load(stateName:String)
     {
-        daJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
+        var loadedJson:StateJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
+
+        stateObjects.clear();
+        stateVariables.clear();
+
+        selectedObject = null;
+        draggedObject = null;
+
+        daJson = loadedJson;
+
         optionShit = [];
-        for (i in daJson.objects)
-            optionShit.push(i.name);
+
+        for (object in daJson.objects)
+            optionShit.push(object.name);
+
         if (daJson.backgroundTexture != null && daJson.backgroundTexture != '')
         {
+            if (bg == null)
+            {
+                bg = new FlxSprite();
+                bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+                add(bg);
+            }
+
+            bg.visible = true;
             bg.loadGraphic(Paths.image(daJson.backgroundTexture));
             bg.x = daJson.backgroundX;
             bg.y = daJson.backgroundY;
             bg.alpha = daJson.backgroundAlpha;
         }
+        else if (bg != null)
+        {
+            bg.visible = false;
+        }
+
         for (object in daJson.objects)
         {
             var sprite:FlxSprite = new FlxSprite(object.x, object.y);
@@ -305,16 +479,20 @@ class CustomStateEditor extends MusicBeatState
             if (object.hasFrames)
             {
                 sprite.frames = Paths.getSparrowAtlas(object.texture);
+
                 sprite.animation.addByPrefix(
                     object.animationPrefix,
                     object.animationPrefix,
                     object.animationFramerate,
                     object.animationLoops
                 );
+
                 sprite.animation.play(object.animationPrefix);
             }
             else
+            {
                 sprite.loadGraphic(Paths.image(object.texture));
+            }
 
             sprite.alpha = object.alpha;
             sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
