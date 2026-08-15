@@ -1,3 +1,7 @@
+--[[
+    MAKE SURE TO NAME THIS FILE THE SAME THING AS THE JSON
+]]
+
 function onBack() -- when you press escape
     goToMainMenu()
 end
