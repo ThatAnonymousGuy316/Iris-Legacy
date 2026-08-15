@@ -49,7 +49,7 @@ class CustomStateEditor extends MusicBeatState
 
     public var optionShit:Array<String> = [];
 
-    public var stateObjects:FlxTypedGroup<FlxSprite>;
+    public var stateSprites:FlxTypedGroup<FlxSprite>;
     public var stateVariables:Map<String, FlxBasic> = new Map<String, FlxBasic>();
 
     var bg:FlxSprite;
@@ -71,6 +71,11 @@ class CustomStateEditor extends MusicBeatState
     var objecthasFramesCheck:FlxUICheckBox;
     var animationLoopCheck:FlxUICheckBox;
 
+    var backgroundTextureInput:FlxUIInputText;
+    var backgroundXInput:FlxUIInputText;
+    var backgroundYInput:FlxUIInputText;
+    var backgroundAlphaInput:FlxUIInputText;
+
     override function create()
     {
         super.create();
@@ -88,61 +93,19 @@ class CustomStateEditor extends MusicBeatState
         for (i in daJson.objects)
             optionShit.push(i.name);
 
+        bg = new FlxSprite(daJson.backgroundX, daJson.backgroundY);
         if (daJson.backgroundTexture != null && daJson.backgroundTexture != '')
-        {
-            bg = new FlxSprite(daJson.backgroundX, daJson.backgroundY).loadGraphic(Paths.image(daJson.backgroundTexture));
-            bg.antialiasing = ClientPrefs.data.globalAntialiasing;
-            bg.alpha = daJson.backgroundAlpha;
-            bg.updateHitbox();
-            add(bg);
-        }
+            bg.loadGraphic(Paths.image(daJson.backgroundTexture));
+        bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+        bg.alpha = daJson.backgroundAlpha;
+        bg.updateHitbox();
+        add(bg);
 
-        stateObjects = new FlxTypedGroup<FlxSprite>();
-        add(stateObjects);
+        stateSprites = new FlxTypedGroup<FlxSprite>();
+        add(stateSprites);
 
         epicGroup = new FlxSpriteGroup();
         add(epicGroup);
-
-        for (object in daJson.objects)
-        {
-            var sprite:FlxSprite = new FlxSprite(object.x, object.y);
-
-            if (object.hasFrames)
-            {
-                sprite.frames = Paths.getSparrowAtlas(object.texture);
-                sprite.animation.addByPrefix(
-                    object.animationPrefix,
-                    object.animationPrefix,
-                    object.animationFramerate,
-                    object.animationLoops
-                );
-                sprite.animation.play(object.animationPrefix);
-            }
-            else
-                sprite.loadGraphic(Paths.image(object.texture));
-
-            sprite.alpha = object.alpha;
-            sprite.antialiasing = ClientPrefs.data.globalAntialiasing;
-
-            sprite.scale.x = object.scale;
-            sprite.scale.y = object.scale;
-
-            stateObjects.add(sprite);
-            stateVariables.set(object.name, sprite);
-
-            daJson.objects.push({
-                name: object.name,
-                hasFrames: object.hasFrames,
-                animationPrefix: object.animationPrefix,
-                animationLoops: object.animationLoops,
-                animationFramerate: object.animationFramerate,
-                texture: object.texture,
-                x: object.x,
-                y: object.y,
-                alpha: object.alpha,
-                scale: object.scale
-            });
-        }
 
         addObjectInputText = new FlxUIInputText(
 			15,
@@ -247,6 +210,65 @@ class CustomStateEditor extends MusicBeatState
                 load(stateNameText.text);
 			}
 		);
+
+        backgroundTextureInput = new FlxUIInputText(
+            loadButton.x + 100,
+            30,
+            200,
+            "",
+            8
+        );
+
+        backgroundXInput = new FlxUIInputText(
+            loadButton.x + 100,
+            60,
+            200,
+            "0",
+            8
+        );
+
+        backgroundYInput = new FlxUIInputText(
+            loadButton.x + 100,
+            90,
+            200,
+            "0",
+            8
+        );
+
+        backgroundAlphaInput = new FlxUIInputText(
+            loadButton.x + 100,
+            120,
+            200,
+            "1",
+            8
+        );
+
+        var backgroundButton = new FlxButton(
+            backgroundTextureInput.x + 250,
+            30,
+            "Apply BG",
+            function()
+            {
+                daJson.backgroundTexture = backgroundTextureInput.text;
+                daJson.backgroundX = Std.parseFloat(backgroundXInput.text);
+                daJson.backgroundY = Std.parseFloat(backgroundYInput.text);
+                daJson.backgroundAlpha = Std.parseFloat(backgroundAlphaInput.text);
+
+                if (daJson.backgroundTexture != '')
+                {
+                    bg.loadGraphic(Paths.image(daJson.backgroundTexture));
+                    bg.x = daJson.backgroundX;
+                    bg.y = daJson.backgroundY;
+                    bg.alpha = daJson.backgroundAlpha;
+                    bg.visible = true;
+                }
+                else
+                {
+                    bg.visible = false;
+                }
+            }
+        );
+
         objecthasFramesCheck.x = addObjectButton.x;
         objecthasFramesCheck.y = addObjectInputText.y + 20;
 		objecthasFramesCheck.checked = false;
@@ -266,12 +288,21 @@ class CustomStateEditor extends MusicBeatState
         epicGroup.add(addObjectButton);
         epicGroup.add(saveButton);
         epicGroup.add(loadButton);
+        epicGroup.add(backgroundTextureInput);
+        epicGroup.add(backgroundXInput);
+        epicGroup.add(backgroundYInput);
+        epicGroup.add(backgroundAlphaInput);
+        epicGroup.add(backgroundButton);
         epicGroup.add(new FlxText(15,addObjectInputText.y - 16,0,'Name/Texture:'));
         epicGroup.add(new FlxText(15,addObjectInputText2.y - 16,0,'Alpha:'));
         epicGroup.add(new FlxText(15,addObjectInputText3.y - 16,0,'Scale:'));
         epicGroup.add(new FlxText(15,addObjectInputText4.y - 16,0,'Animation Prefix/Name:'));
         epicGroup.add(new FlxText(15,addObjectInputText5.y - 16,0,'Animation Framerate:'));
         epicGroup.add(new FlxText(15,stateNameText.y - 16,0,'State Name (For Saving and Loading):'));
+        epicGroup.add(new FlxText(500, 14, 0, 'Background Texture:'));
+        epicGroup.add(new FlxText(500, 44, 0, 'Background X:'));
+        epicGroup.add(new FlxText(500, 74, 0, 'Background Y:'));
+        epicGroup.add(new FlxText(500, 104, 0, 'Background Alpha:'));
     }
 
     override function update(elapsed:Float)
@@ -289,11 +320,11 @@ class CustomStateEditor extends MusicBeatState
     {
         if (FlxG.mouse.justPressedRight)
         {
-            for (object in stateObjects)
+            for (object in stateSprites)
             {
                 if (FlxG.mouse.overlaps(object))
                 {
-                    stateObjects.remove(object, true);
+                    stateSprites.remove(object, true);
                     
                     for (name => variable in stateVariables)
                     {
@@ -325,7 +356,7 @@ class CustomStateEditor extends MusicBeatState
         }
         if (FlxG.mouse.justPressed)
         {
-            for (object in stateObjects)
+            for (object in stateSprites)
             {
                 if (FlxG.mouse.overlaps(object))
                 {
@@ -404,7 +435,7 @@ class CustomStateEditor extends MusicBeatState
         sprite.scale.x = scale;
         sprite.scale.y = scale;
 
-        stateObjects.add(sprite);
+        stateSprites.add(sprite);
         stateVariables.set(name, sprite);
 
         daJson.objects.push({
@@ -439,7 +470,7 @@ class CustomStateEditor extends MusicBeatState
     {
         var loadedJson:StateJson = Json.parse(Paths.getTextFromFile('states/${stateName}.json'));
 
-        stateObjects.clear();
+        stateSprites.clear();
         stateVariables.clear();
 
         selectedObject = null;
@@ -448,6 +479,11 @@ class CustomStateEditor extends MusicBeatState
         daJson = loadedJson;
 
         optionShit = [];
+
+        backgroundTextureInput.text = daJson.backgroundTexture;
+        backgroundXInput.text = Std.string(daJson.backgroundX);
+        backgroundYInput.text = Std.string(daJson.backgroundY);
+        backgroundAlphaInput.text = Std.string(daJson.backgroundAlpha);
 
         for (object in daJson.objects)
             optionShit.push(object.name);
@@ -500,7 +536,7 @@ class CustomStateEditor extends MusicBeatState
             sprite.scale.x = object.scale;
             sprite.scale.y = object.scale;
 
-            stateObjects.add(sprite);
+            stateSprites.add(sprite);
             stateVariables.set(object.name, sprite);
         }
     }
