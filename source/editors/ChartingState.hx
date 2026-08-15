@@ -99,6 +99,7 @@ class ChartingState extends MusicBeatState
 	var UI_box:FlxUITabMenu;
 
 	public static var goToPlayState:Bool = false;
+
 	/**
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
@@ -228,6 +229,8 @@ class ChartingState extends MusicBeatState
 			addSection();
 			PlayState.SONG = _song;
 		}
+
+		setupWelcomeMusic();
 
 		// Paths.clearMemory();
 
@@ -1746,6 +1749,7 @@ class ChartingState extends MusicBeatState
 				if (FlxG.sound.music.playing)
 				{
 					FlxG.sound.music.pause();
+					welcomeMusic.play();
 					if(vocals != null && _song.needsVoices) vocals.pause();
 				}
 				else
@@ -1756,6 +1760,7 @@ class ChartingState extends MusicBeatState
 						vocals.time = FlxG.sound.music.time;
 						vocals.play();
 					}
+					welcomeMusic.pause();
 					FlxG.sound.music.play();
 				}
 			}

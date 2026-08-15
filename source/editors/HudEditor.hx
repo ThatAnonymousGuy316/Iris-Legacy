@@ -80,6 +80,8 @@ class HudEditor extends MusicBeatState
 	{
 		super.create();
 
+		setupWelcomeMusic();
+
 		FlxG.mouse.visible = true;
 
 		daJsonScore = Json.parse(Paths.getTextFromFile('hud/ScoreText.json'));

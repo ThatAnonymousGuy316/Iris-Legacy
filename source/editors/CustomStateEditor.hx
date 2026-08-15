@@ -79,6 +79,8 @@ class CustomStateEditor extends MusicBeatState
     override function create()
     {
         super.create();
+        setupWelcomeMusic();
+        
         FlxG.mouse.visible = true;
         daJson = {
             objects: [],

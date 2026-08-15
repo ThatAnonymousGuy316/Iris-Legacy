@@ -84,6 +84,7 @@ class ScriptEditorState extends MusicBeatState
 
     override public function create()
     {
+		setupWelcomeMusic();
         super.create();
         FlxG.mouse.visible = true;
 		bg = new FlxSprite(-80, 0);

@@ -14,6 +14,7 @@ import flixel.util.FlxGradient;
 import flixel.FlxState;
 import flixel.FlxCamera;
 import flixel.FlxBasic;
+import flixel.sound.FlxSound;
 
 class MusicBeatState extends modcharting.ModchartMusicBeatState
 {
@@ -28,6 +29,24 @@ class MusicBeatState extends modcharting.ModchartMusicBeatState
 	public var controls(get, never):Controls;
 
 	public static var camBeat:FlxCamera;
+
+	var welcomeMusic:FlxSound = new FlxSound();
+
+	function setupWelcomeMusic()
+	{
+		this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop'));
+		this.welcomeMusic.play();
+		FlxG.sound.list.add(this.welcomeMusic);
+		this.welcomeMusic.looped = true;
+	}
+
+	override function destroy()
+	{
+		super.destroy();
+		this.welcomeMusic.stop();
+		this.welcomeMusic.looped = false;
+		FlxG.sound.list.remove(this.welcomeMusic);
+	}
 
 	inline function get_controls():Controls
 		return Controls.instance;

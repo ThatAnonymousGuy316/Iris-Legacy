@@ -94,6 +94,8 @@ class MainMenuEditor extends MusicBeatState
 	{
 		super.create();
 
+		setupWelcomeMusic();
+
 		FlxG.mouse.visible = true;
 
 		menuJson = Json.parse(Paths.getTextFromFile('states/_override/MainMenuState.json'));
