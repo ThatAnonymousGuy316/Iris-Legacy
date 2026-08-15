@@ -65,3 +65,7 @@ end
 function onStepHit()
     
 end
+
+function onChangeItem(change)
+    
+end
