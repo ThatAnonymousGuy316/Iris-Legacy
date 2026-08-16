@@ -192,8 +192,8 @@ class HudEditor extends MusicBeatState
 		);
 
 		var saveButton = new FlxButton(
-			toggleScoreBar.x,
-			toggleScoreBar.y + 50,
+			toggleScoreBar.x + 170,
+			toggleScoreBar.y,
 			"Save",
 			function()
 			{
@@ -201,8 +201,29 @@ class HudEditor extends MusicBeatState
 			}
 		);
 
+		var scoreTxtDaText = new FlxUIInputText(
+			toggleScoreBar.x,
+			saveButton.y + 50,
+			200,
+			daJsonScore.daText,
+			8
+		);
+
+		var reloadTxt = new FlxButton(
+			scoreTxtDaText.x + 220,
+			scoreTxtDaText.y,
+			"Reload Text",
+			function()
+			{
+				scoreTxt.text = scoreTxtDaText.text;
+				daJsonScore.daText = scoreTxt.text;
+			}
+		);
+
 		editorUI.add(toggleScoreBar);
 		editorUI.add(saveButton);
+		editorUI.add(scoreTxtDaText);
+		editorUI.add(reloadTxt);
 	}
 
 	override function update(elapsed:Float)
@@ -308,14 +329,38 @@ class HudEditor extends MusicBeatState
 
 	public function saveJson()
 	{
-		daJsonHealth.x = healthBarBG.x - daJsonHealth.xPlus;
-		daJsonHealth.y = healthBarBG.y - daJsonHealth.yPlus;
+		if (ClientPrefs.data.downScroll)
+		{
+			daJsonHealth.x = healthBarBG.x - daJsonHealth.xPlus;
+			daJsonHealth.yDownscroll = healthBarBG.y - daJsonHealth.yPlus;
+		}
+		else
+		{
+			daJsonHealth.x = healthBarBG.x - daJsonHealth.xPlus;
+			daJsonHealth.y = healthBarBG.y - daJsonHealth.yPlus;
+		}
 
-		daJsonScore.x = scoreTxt.x - daJsonScore.xPlus;
-		daJsonScore.y = scoreTxt.y - daJsonScore.yPlus;
+		if (ClientPrefs.data.downScroll)
+		{
+			daJsonScore.x = scoreTxt.x - daJsonScore.xPlus;
+			daJsonScore.yDownscroll = scoreTxt.y - daJsonScore.yPlus;
+		}
+		else
+		{
+			daJsonScore.x = scoreTxt.x - daJsonScore.xPlus;
+			daJsonScore.y = scoreTxt.y - daJsonScore.yPlus;
+		}
 
-		daJsonScore.scoreBarX = scoreBar.x - daJsonScore.scoreBarXPlus;
-		daJsonScore.scoreBarY = scoreBar.y - daJsonScore.scoreBarYPlus;
+		if (ClientPrefs.data.downScroll)
+		{
+			daJsonScore.scoreBarX = scoreBar.x - daJsonScore.scoreBarXPlus;
+			daJsonScore.scoreBarYDownscroll = scoreBar.y - daJsonScore.scoreBarYPlus;
+		}
+		else
+		{
+			daJsonScore.scoreBarX = scoreBar.x - daJsonScore.scoreBarXPlus;
+			daJsonScore.scoreBarY = scoreBar.y - daJsonScore.scoreBarYPlus;
+		}
 
 		var saveFolder:String =
 			Sys.getCwd() + "/game/hud";

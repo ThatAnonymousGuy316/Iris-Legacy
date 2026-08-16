@@ -73,7 +73,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			"what your hitsound is!",
 			'hitsoundType',
 			'string',
-			['Default', 'Fart', 'Pluh', 'Scream', 'Fuck!', 'Yippie']);
+			['Default', 'Fart', 'Pluh', 'Scream', 'Fuck!', 'Yippie', 'Guns']);
 		addOption(option);
 
 		var option:Option = new Option('Hitsound Volume',

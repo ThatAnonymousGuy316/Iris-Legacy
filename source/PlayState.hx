@@ -5246,6 +5246,8 @@ class PlayState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('fuck-sound-effect'), ClientPrefs.data.hitsoundVolume);
 			else if (ClientPrefs.data.hitsoundType == 'Yippie')
 				FlxG.sound.play(Paths.sound('yippe'), ClientPrefs.data.hitsoundVolume);
+			else if (ClientPrefs.data.hitsoundType == 'Guns')
+				FlxG.sound.play(Paths.sound('guns'), ClientPrefs.data.hitsoundVolume);
 			else
 				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
 		}
